@@ -1,13 +1,9 @@
-﻿// Copyright (c) Redforce04. All rights reserved.
+﻿// -----------------------------------------------------------------------
+// <copyright file="Config.cs" company="Redforce04">
+// Copyright (c) Redforce04. All rights reserved.
+// Licensed under the CC BY-SA 3.0 license.
 // </copyright>
-// -----------------------------------------
-//    Solution:         BananaPlugin
-//    Project:          BananaPlugin
-//    FileName:         Config.cs
-//    Author:           Redforce04#4091
-//    Revision Date:    11/09/2023 10:48 AM
-//    Created Date:     11/09/2023 10:48 AM
-// -----------------------------------------
+// -----------------------------------------------------------------------
 
 namespace BananaLibrary;
 

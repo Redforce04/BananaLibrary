@@ -1,7 +1,7 @@
 ﻿[*.cs]
 
 # SA1633: File should have header
-dotnet_diagnostic.SA1633.severity = none
+dotnet_diagnostic.SA1633.severity = warning
 
 # IDE0003: Remove qualification
 dotnet_diagnostic.IDE0003.severity = none

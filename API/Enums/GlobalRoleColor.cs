@@ -1,13 +1,9 @@
-﻿// Copyright (c) Redforce04. All rights reserved.
+﻿// -----------------------------------------------------------------------
+// <copyright file="GlobalRoleColor.cs" company="Redforce04">
+// Copyright (c) Redforce04. All rights reserved.
+// Licensed under the CC BY-SA 3.0 license.
 // </copyright>
-// -----------------------------------------
-//    Solution:         BananaLibrary
-//    Project:          BananaLibrary
-//    FileName:         RoleColor.cs
-//    Author:           Redforce04#4091
-//    Revision Date:    05/24/2025 15:21
-//    Created Date:     05/24/2025 15:05
-// -----------------------------------------
+// -----------------------------------------------------------------------
 
 namespace BananaLibrary.API.Enums;
 

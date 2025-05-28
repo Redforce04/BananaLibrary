@@ -1,6 +1,12 @@
-﻿namespace BananaPlugin.Extensions;
+﻿// -----------------------------------------------------------------------
+// <copyright file="MECExtensions.cs" company="Redforce04">
+// Copyright (c) Redforce04. All rights reserved.
+// Licensed under the CC BY-SA 3.0 license.
+// </copyright>
+// -----------------------------------------------------------------------
 
-using BananaPlugin.API.Utils;
+namespace BananaPlugin.Extensions;
+
 using MEC;
 using System;
 using System.Collections.Generic;
@@ -81,7 +87,7 @@ public static class MECExtensions
                     "]\n",
                     e.ToString());
 
-                BPLogger.Error(message);
+                Log.Error(message);
 
                 yield break;
             }

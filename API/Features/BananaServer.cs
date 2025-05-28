@@ -1,13 +1,9 @@
-﻿// Copyright (c) Redforce04. All rights reserved.
+﻿// -----------------------------------------------------------------------
+// <copyright file="BananaServer.cs" company="Redforce04">
+// Copyright (c) Redforce04. All rights reserved.
+// Licensed under the CC BY-SA 3.0 license.
 // </copyright>
-// -----------------------------------------
-//    Solution:         BananaPlugin
-//    Project:          BananaPlugin
-//    FileName:         ServerInfo.cs
-//    Author:           Redforce04#4091
-//    Revision Date:    11/05/2023 2:53 PM
-//    Created Date:     11/05/2023 2:53 PM
-// -----------------------------------------
+// -----------------------------------------------------------------------
 
 namespace BananaLibrary.API.Features;
 
@@ -15,7 +11,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using BananaPlugin.API.Utils;
 using Collections;
 using Interfaces;
 
@@ -34,7 +29,7 @@ public abstract class BananaServer : IServerInfo, IPrefixableItem
     /// <summary>
     /// Gets the port that the server uses.
     /// </summary>
-    public abstract int ServerPort { get; }
+    public abstract ushort ServerPort { get; }
 
     /// <summary>
     /// Gets the name of the server.
@@ -49,7 +44,7 @@ public abstract class BananaServer : IServerInfo, IPrefixableItem
     /// <summary>
     /// Gets a value indicating the prefix for this server.
     /// </summary>
-    public abstract string Prefix { get; }
+    public string Prefix => this.ServerId;
 
     /// <summary>
     /// Initializes the server implementation for a plugin.
@@ -57,18 +52,31 @@ public abstract class BananaServer : IServerInfo, IPrefixableItem
     /// <exception cref="NullReferenceException">Thrown when the plugin doesn't have a valid Server.</exception>
     internal static void LoadBananaServers()
     {
-        BPLogger.Debug($"Loading defined Banana Servers.");
+        Log.Debug($"Loading defined Banana Servers.");
         List<BananaServer> bananaServers = GetServerInfoInstances();
+        if (bananaServers.Count == 0)
+        {
+            Log.Debug($"No BananaServers found. BananaServers will not be loaded.");
+            return;
+        }
+
+        bool foundViaPort = false;
         BananaServer? primaryKey = bananaServers.FirstOrDefault(b => b.ServerId == Plugin.Instance!.Config!.CurrentBananaServerId);
+        if (primaryKey == null)
+        {
+            foundViaPort = true;
+            primaryKey = bananaServers.FirstOrDefault(b => b.ServerPort == ServerStatic.ServerPort);
+        }
 
         if (primaryKey is null)
         {
-            Log.Error("Could not find a valid server profile, for this server. Try setting the Server Id.");
+            Log.Error("Could not find a valid server profile, for this server. Try setting the Server Id or updating the BananaServer port to match the server port.");
             throw new NullReferenceException("Could not find a valid server profile, for this server. Try setting the Server Id.");
         }
 
         Servers = new ServerInfoCollection(primaryKey, bananaServers);
         Servers.MarkAsLoaded();
+        Log.Info($"Current BananaServer: {Servers.PrimaryKey} [Found Via {(foundViaPort ? "Port" : "Config")}].");
     }
 
     /// <summary>
@@ -76,7 +84,7 @@ public abstract class BananaServer : IServerInfo, IPrefixableItem
     /// </summary>
     internal static void UnloadBananaServers()
     {
-        BPLogger.Debug($"Unloading Banana Servers.");
+        Log.Debug($"Unloading Banana Servers.");
         Servers = null;
     }
 
@@ -101,7 +109,7 @@ public abstract class BananaServer : IServerInfo, IPrefixableItem
 
                 BananaServer info = (BananaServer)Activator.CreateInstance(type, nonPublic: true);
                 serverInfos.Add(info);
-                BPLogger.Debug($"Found Server Info {info.ServerName} [{info.ServerPort}] - {info.ServerId}");
+                Log.Debug($"Found Server Info {info.ServerName} [{info.ServerPort}] - {info.ServerId}");
             }
         }
 

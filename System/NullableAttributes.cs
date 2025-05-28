@@ -1,4 +1,10 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+﻿// -----------------------------------------------------------------------
+// <copyright file="NullableAttributes.cs" company="Redforce04">
+// Copyright (c) Redforce04. All rights reserved.
+// Licensed under the CC BY-SA 3.0 license.
+// </copyright>
+// -----------------------------------------------------------------------
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
 #pragma warning disable

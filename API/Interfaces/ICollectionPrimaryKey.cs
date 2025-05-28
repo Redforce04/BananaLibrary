@@ -1,13 +1,9 @@
-﻿// Copyright (c) Redforce04. All rights reserved.
+﻿// -----------------------------------------------------------------------
+// <copyright file="ICollectionPrimaryKey.cs" company="Redforce04">
+// Copyright (c) Redforce04. All rights reserved.
+// Licensed under the CC BY-SA 3.0 license.
 // </copyright>
-// -----------------------------------------
-//    Solution:         BananaPlugin
-//    Project:          BananaPlugin
-//    FileName:         CollectionPrimaryKet.cs
-//    Author:           Redforce04#4091
-//    Revision Date:    11/05/2023 4:53 PM
-//    Created Date:     11/05/2023 4:53 PM
-// -----------------------------------------
+// -----------------------------------------------------------------------
 
 namespace BananaLibrary.API.Interfaces;
 

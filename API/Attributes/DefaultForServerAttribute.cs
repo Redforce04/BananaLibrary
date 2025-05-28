@@ -1,13 +1,9 @@
-﻿// Copyright (c) Redforce04. All rights reserved.
+﻿// -----------------------------------------------------------------------
+// <copyright file="DefaultForServerAttribute.cs" company="Redforce04">
+// Copyright (c) Redforce04. All rights reserved.
+// Licensed under the CC BY-SA 3.0 license.
 // </copyright>
-// -----------------------------------------
-//    Solution:         BananaLibrary
-//    Project:          BananaLibrary
-//    FileName:         DefaultServerValue.cs
-//    Author:           Redforce04#4091
-//    Revision Date:    05/23/2025 14:57
-//    Created Date:     05/23/2025 14:05
-// -----------------------------------------
+// -----------------------------------------------------------------------
 
 namespace BananaLibrary.API.Attributes;
 
@@ -19,14 +15,14 @@ using Features;
 /// </summary>
 /// <typeparam name="T">The <see cref="BananaServer"/> Instance to target for the config.</typeparam>
 [AttributeUsage(AttributeTargets.Property, AllowMultiple = true)]
-public class DefaultServerValueAttribute<T> : Attribute
+public class DefaultForServerAttribute<T> : Attribute
     where T : BananaServer
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="DefaultServerValueAttribute{T}"/> class.
+    /// Initializes a new instance of the <see cref="DefaultForServerAttribute{T}"/> class.
     /// </summary>
     /// <param name="defaultValue">The default value of the configuration object.</param>
-    public DefaultServerValueAttribute(object defaultValue)
+    public DefaultForServerAttribute(object defaultValue)
     {
         this.DefaultValue = defaultValue;
     }

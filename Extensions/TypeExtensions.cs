@@ -1,4 +1,10 @@
-﻿// thank you stack overflow :)
+﻿// -----------------------------------------------------------------------
+// <copyright file="TypeExtensions.cs" company="Redforce04">
+// Copyright (c) Redforce04. All rights reserved.
+// Licensed under the CC BY-SA 3.0 license.
+// </copyright>
+// -----------------------------------------------------------------------
+
 namespace BananaLibrary.Extensions;
 
 using System;

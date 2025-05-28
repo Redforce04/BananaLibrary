@@ -1,13 +1,9 @@
-﻿// Copyright (c) Redforce04. All rights reserved.
+﻿// -----------------------------------------------------------------------
+// <copyright file="BananaRole.cs" company="Redforce04">
+// Copyright (c) Redforce04. All rights reserved.
+// Licensed under the CC BY-SA 3.0 license.
 // </copyright>
-// -----------------------------------------
-//    Solution:         BananaLibrary
-//    Project:          BananaLibrary
-//    FileName:         BananaRole.cs
-//    Author:           Redforce04#4091
-//    Revision Date:    05/24/2025 13:43
-//    Created Date:     05/24/2025 13:05
-// -----------------------------------------
+// -----------------------------------------------------------------------
 
 namespace BananaLibrary.API.Features;
 
@@ -16,7 +12,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Attributes;
-using BananaPlugin.API.Utils;
 using Collections;
 using Enums;
 using Extensions;
@@ -123,8 +118,15 @@ public abstract class BananaRole : IPrefixableItem
     /// </summary>
     internal static void LoadBananaRoles()
     {
-        BPLogger.Debug($"Loading defined Banana Roles.");
-        BananaRoles = new RoleCollection(GetBananaRoles());
+        Log.Debug($"Loading defined Banana Roles.");
+        List<BananaRole> roles = GetBananaRoles();
+        if (roles.Count == 0)
+        {
+            Log.Debug($"No BananaRoles found. BananaRoles will not be loaded.");
+            return;
+        }
+
+        BananaRoles = new RoleCollection(roles);
         BananaRoles.MarkAsLoaded();
         foreach (BananaRole role in BananaRoles.ToList())
         {
@@ -142,7 +144,7 @@ public abstract class BananaRole : IPrefixableItem
     /// </summary>
     internal static void UnloadBananaRoles()
     {
-        BPLogger.Debug($"Unloading Banana Roles.");
+        Log.Debug($"Unloading Banana Roles.");
         BananaRoles = null;
     }
 
@@ -178,7 +180,7 @@ public abstract class BananaRole : IPrefixableItem
                     role.realRequiredKickPower = role.RequiredKickPower ?? 0;
                     role.inheritedRoleAttributes = Attribute.GetCustomAttributes(type, typeof(InheritBananaRoleAttribute)).Cast<InheritBananaRoleAttribute>().ToList();
                     roles.Add(role.Name, role);
-                    BPLogger.Debug($"Found Banana Role {role.Name} [{role.RoleHierarchyId}] - (Kick Powers: {role.KickPower}/{role.RequiredKickPower})");
+                    Log.Debug($"Found Banana Role {role.Name} [{role.RoleHierarchyId}] - (Kick Powers: {role.KickPower}/{role.RequiredKickPower})");
                     continue;
                 }
 

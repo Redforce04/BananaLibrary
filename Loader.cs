@@ -1,18 +1,13 @@
-﻿// Copyright (c) Redforce04. All rights reserved.
+﻿// -----------------------------------------------------------------------
+// <copyright file="Loader.cs" company="Redforce04">
+// Copyright (c) Redforce04. All rights reserved.
+// Licensed under the CC BY-SA 3.0 license.
 // </copyright>
-// -----------------------------------------
-//    Solution:         BananaLibrary
-//    Project:          BananaLibrary
-//    FileName:         Loader.cs
-//    Author:           Redforce04#4091
-//    Revision Date:    05/23/2025 14:41
-//    Created Date:     05/23/2025 14:05
-// -----------------------------------------
-
+// -----------------------------------------------------------------------
 // ReSharper disable InconsistentNaming
-namespace BananaLibrary.Loader;
+namespace BananaLibrary;
 
-using API.Features;
+using BananaLibrary.API.Features;
 
 /// <summary>
 /// Contains the Initializer that is used to enable the features of this framework.
@@ -38,6 +33,7 @@ public static class Loader
         // Initialize the current Banana Servers
         BananaServer.LoadBananaServers();
         BananaRole.LoadBananaRoles();
+        BananaFeature.LoadBananaFeatures();
     }
 
     /// <summary>
@@ -53,5 +49,6 @@ public static class Loader
         initialized = false;
         BananaServer.UnloadBananaServers();
         BananaRole.UnloadBananaRoles();
+        BananaFeature.UnloadBananaFeatures();
     }
 }

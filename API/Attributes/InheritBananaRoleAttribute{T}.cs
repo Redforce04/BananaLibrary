@@ -1,13 +1,9 @@
-﻿// Copyright (c) Redforce04. All rights reserved.
+﻿// -----------------------------------------------------------------------
+// <copyright file="InheritBananaRoleAttribute{T}.cs" company="Redforce04">
+// Copyright (c) Redforce04. All rights reserved.
+// Licensed under the CC BY-SA 3.0 license.
 // </copyright>
-// -----------------------------------------
-//    Solution:         BananaLibrary
-//    Project:          BananaLibrary
-//    FileName:         InheritBananaRole[T]Attribute.cs
-//    Author:           Redforce04#4091
-//    Revision Date:    05/24/2025 16:47
-//    Created Date:     05/24/2025 16:05
-// -----------------------------------------
+// -----------------------------------------------------------------------
 
 namespace BananaLibrary.API.Attributes;
 

@@ -1,12 +1,18 @@
-﻿namespace BananaPlugin.API.Utils;
+﻿// -----------------------------------------------------------------------
+// <copyright file="BPLogger.cs" company="Redforce04">
+// Copyright (c) Redforce04. All rights reserved.
+// Licensed under the CC BY-SA 3.0 license.
+// </copyright>
+// -----------------------------------------------------------------------
 
-using Discord;
+namespace BananaLibrary.API.Utils;
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
 using System.Reflection;
 using BananaLibrary.API.Features;
+using Discord;
 
 /// <summary>
 /// A class used to sort logs by their feature and type.
@@ -162,7 +168,7 @@ public sealed class BPLogger
         }
 #else
         // Todo Fix PluginAPI.Core.Log.Raw(PluginAPI.Core.Log.FormatText(message, color));
-        string prefix = callingAssembly == CurrentAssembly ? "PluginAPI" : callingAssembly.GetName().Name;
+        string prefix = callingAssembly == CurrentAssembly ? "BananaLibrary" : callingAssembly.GetName().Name;
         switch (logType)
         {
             // Raw:     ServerConsole.AddLog(FormatText($"{(!string.IsNullOrEmpty(prefix) ? $"&7[&b&2{prefix}&B&7] " : "")}" + message, "7"));

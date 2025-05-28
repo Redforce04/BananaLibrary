@@ -10,33 +10,30 @@
         <DebugType>embedded</DebugType>
         <Nullable>enable</Nullable>
         <LangVersion>preview</LangVersion>
+        <RestoreAdditionalProjectSources>
+        https://api.nuget.org/v3/index.json;
+        https://nuget.bepinex.dev/v3/index.json
+    </RestoreAdditionalProjectSources>
         <Platforms>x64;AnyCPU</Platforms>
         <Configurations>Debug;Release;Local</Configurations>
         <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
+        <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)BananaLibrary.ruleset</CodeAnalysisRuleSet>
         <NoWarn>$(NoWarn),1573,1591,1712</NoWarn>
         <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Local|x64'">
-        <DefineConstants>$(DefineConstants);DEBUG</DefineConstants>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Local|AnyCPU'">
         <DefineConstants>$(DefineConstants);DEBUG</DefineConstants>
     </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' " />
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' " />
     <ItemGroup>
-        <Reference Include="Pooling" HintPath="$(SL_REFERENCES)\Pooling-Publicized.dll" Private="False" />
+        <Reference Include="Pooling" HintPath="$(SL_REFERENCES)\Pooling.dll" Private="False" />
         <Reference Include="Assembly-CSharp-firstpass" HintPath="$(SL_REFERENCES)\Assembly-CSharp-firstpass.dll" Private="False" />
-        <Reference Include="Assembly-CSharp" HintPath="$(SL_REFERENCES)\Assembly-CSharp.dll" Private="False" />
+        <Reference Include="Assembly-CSharp" HintPath="$(SL_REFERENCES)\Assembly-CSharp.dll" Private="False" Publicized="True" />
         <Reference Include="Mirror" HintPath="$(SL_REFERENCES)\Mirror.dll" Private="False" />
         <Reference Include="CommandSystem.Core" HintPath="$(SL_REFERENCES)\CommandSystem.Core.dll" Private="False" />
         <Reference Include="UnityEngine.CoreModule" HintPath="$(SL_REFERENCES)\UnityEngine.CoreModule.dll" Private="False" />
         <Reference Include="UnityEngine.PhysicsModule" HintPath="$(SL_REFERENCES)\UnityEngine.PhysicsModule.dll" Private="False" />
-        <Reference Include="Push" HintPath="References\Push.dll" Private="False" />
-        <Reference Include="SCP294" HintPath="References\SCP294.dll" Private="False" />
-        <Reference Include="MapEditorReborn" HintPath="References\MapEditorReborn.dll" Private="False" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Costura.Fody" Version="5.8.0-alpha0098" ExcludeAssets="RUNTIME">
@@ -58,6 +55,10 @@
     <ItemGroup>
         <None Remove=".editorconfig" />
         <None Include=".editorconfig" Link="Resources/.editorconfig" />
+        <None Remove="BananaLibrary.ruleset" />
+        <None Include="BananaLibrary.ruleset" Link="Resources/BananaLibrary.ruleset" />
+        <None Remove="NuGet.config" />
+        <None Include="NuGet.config" Link="Resources/NuGet.config" />
         <None Remove=".gitignore" />
         <None Include=".gitignore" Link="Resources/.gitignore" />
         <None Remove=".gitattributes" />
@@ -66,8 +67,7 @@
         <None Include="README.md" Link="Resources/README.md" />
         <None Remove="FodyWeavers.xml" />
         <None Include="FodyWeavers.xml" Link="Resources/FodyWeavers.xml" />
-        <None Remove="stylecop.json" />
-        <None Include="stylecop.json" Link="Resources/stylecop.json" />
+        <AdditionalFiles Include="stylecop.json" Link="Resources/stylecop.json" />
         <EmbeddedResource Include="changelogs.txt" Link="Resources/changelogs.txt"/>
     </ItemGroup>
 </Project>

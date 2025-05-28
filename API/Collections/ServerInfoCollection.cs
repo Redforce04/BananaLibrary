@@ -1,11 +1,18 @@
-﻿namespace BananaLibrary.API.Collections;
+﻿// -----------------------------------------------------------------------
+// <copyright file="ServerInfoCollection.cs" company="Redforce04">
+// Copyright (c) Redforce04. All rights reserved.
+// Licensed under the CC BY-SA 3.0 license.
+// </copyright>
+// -----------------------------------------------------------------------
+
+namespace BananaLibrary.API.Collections;
 
 using System.Collections.Generic;
 using Features;
 using Interfaces;
 
 /// <summary>
-/// Used to contain all <see cref="BananaServer"/> instances for a <see cref="BananaPlugin{TConfig}"/>.
+/// Used to contain all <see cref="BananaServer"/> instances for all plugins.
 /// </summary>
 // ReSharper disable UnusedParameter.Local
 public sealed class ServerInfoCollection : Collection<BananaServer>, ICollectionPrimaryKey<BananaServer>

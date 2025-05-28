@@ -1,13 +1,9 @@
-﻿// Copyright (c) Redforce04. All rights reserved.
+﻿// -----------------------------------------------------------------------
+// <copyright file="IServerInfo.cs" company="Redforce04">
+// Copyright (c) Redforce04. All rights reserved.
+// Licensed under the CC BY-SA 3.0 license.
 // </copyright>
-// -----------------------------------------
-//    Solution:         BananaPlugin
-//    Project:          BananaPlugin
-//    FileName:         IServerInstancePlugin.cs
-//    Author:           Redforce04#4091
-//    Revision Date:    11/08/2023 2:32 PM
-//    Created Date:     11/08/2023 2:32 PM
-// -----------------------------------------
+// -----------------------------------------------------------------------
 
 namespace BananaLibrary.API.Interfaces;
 
@@ -24,7 +20,7 @@ public interface IServerInfo
     /// <summary>
     /// Gets the port that the server uses.
     /// </summary>
-    public abstract int ServerPort { get; }
+    public abstract ushort ServerPort { get; }
 
     /// <summary>
     /// Gets the name of the server.
@@ -35,9 +31,4 @@ public interface IServerInfo
     /// Gets this can be defined via the config of the server.
     /// </summary>
     public abstract string ServerId { get; }
-
-    /// <summary>
-    /// Gets the prefix for the server.
-    /// </summary>
-    public abstract string Prefix { get; }
 }

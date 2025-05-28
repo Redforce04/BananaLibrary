@@ -1,13 +1,9 @@
-﻿// Copyright (c) Redforce04. All rights reserved.
+﻿// -----------------------------------------------------------------------
+// <copyright file="RoleCollection.cs" company="Redforce04">
+// Copyright (c) Redforce04. All rights reserved.
+// Licensed under the CC BY-SA 3.0 license.
 // </copyright>
-// -----------------------------------------
-//    Solution:         BananaPlugin
-//    Project:          BananaPlugin
-//    FileName:         RoleCollection.cs
-//    Author:           Redforce04#4091
-//    Revision Date:    11/09/2023 11:52 AM
-//    Created Date:     11/09/2023 11:52 AM
-// -----------------------------------------
+// -----------------------------------------------------------------------
 
 namespace BananaLibrary.API.Collections;
 

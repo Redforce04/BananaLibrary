@@ -1,19 +1,32 @@
-﻿namespace BananaLibrary.API.Collections;
+﻿// -----------------------------------------------------------------------
+// <copyright file="FeatureCollection.cs" company="Redforce04">
+// Copyright (c) Redforce04. All rights reserved.
+// Licensed under the CC BY-SA 3.0 license.
+// </copyright>
+// -----------------------------------------------------------------------
+
+namespace BananaLibrary.API.Collections;
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Features;
 
 /// <summary>
-/// Used to contain all <see cref="BananaFeature"/> for a <see cref="BananaPlugin{TConfig}"/>.
+/// Used to contain all <see cref="BananaFeature"/> for all plugins.
 /// </summary>
 public sealed class FeatureCollection : Collection<BananaFeature>
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="FeatureCollection"/> class.
     /// </summary>
-    public FeatureCollection()
+    /// <param name="features">The features to be added.</param>
+    public FeatureCollection(List<BananaFeature> features)
     {
+        foreach (BananaFeature feature in features)
+        {
+            this.TryAddItem(feature, out _);
+        }
     }
 
     /// <inheritdoc cref="TryGetFeature"/>

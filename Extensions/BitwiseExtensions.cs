@@ -1,13 +1,9 @@
-﻿// Copyright (c) Redforce04. All rights reserved.
+﻿// -----------------------------------------------------------------------
+// <copyright file="BitwiseExtensions.cs" company="Redforce04">
+// Copyright (c) Redforce04. All rights reserved.
+// Licensed under the CC BY-SA 3.0 license.
 // </copyright>
-// -----------------------------------------
-//    Solution:         AdvancedCommandLibrary
-//    Project:          AdvancedCommandLibrary
-//    FileName:         BitwiseExtensions.cs
-//    Author:           Redforce04#4091
-//    Revision Date:    05/23/2025 12:44
-//    Created Date:     05/23/2025 12:05
-// -----------------------------------------
+// -----------------------------------------------------------------------
 
 namespace BananaLibrary.Extensions;
 
@@ -47,7 +43,7 @@ public static class BitwiseExtensions
     /// </summary>
     /// <param name="value">The enum value to check for flags.</param>
     /// <param name="requiredValues">The enum containing the flags that will be checked.</param>
-    /// <returns>True if <see cref="value"/> has the required flags specified in <see cref="requiredValues"/>. Otherwise, false.</returns>
+    /// <returns>True if value has the required flags specified in requiredValues. Otherwise, false.</returns>
     public static bool HasRequiredFlags(this Enum value, Enum requiredValues)
     {
         foreach (Enum flag in Enum.GetValues(requiredValues.GetType()))
@@ -66,7 +62,7 @@ public static class BitwiseExtensions
     /// </summary>
     /// <param name="value">The item with the enum type that will be returned with full flags.</param>
     /// <typeparam name="T">The enum type that will be returned with full flags.</typeparam>
-    /// <returns>An enum of type <see cref="T"/> with all flags set to full.</returns>
+    /// <returns>An enum of type T with all flags set to full.</returns>
     public static T IncludeAll<T>(this T value)
         where T : Enum
     {
@@ -87,9 +83,9 @@ public static class BitwiseExtensions
     /// Includes an enumerated type and returns the new value.
     /// </summary>
     /// <param name="value">The original enum to use as a base value.</param>
-    /// <param name="append">The enum to append to <see cref="value"/>.</param>
+    /// <param name="append">The enum to append to value.</param>
     /// <typeparam name="T">The enum type that will be returned.</typeparam>
-    /// <returns>The combined values of <see cref="value"/> and <see cref="append"/> returned in the type of <see cref="T"/>.</returns>
+    /// <returns>The combined values of value and append returned in the type of T.</returns>
     // ReSharper disable once MemberCanBePrivate.Global
     public static T Include<T>(this Enum value, T append)
     {
@@ -122,7 +118,7 @@ public static class BitwiseExtensions
     /// </summary>
     /// <param name="valueToCheck">The enum value to check.</param>
     /// <param name="checkingFor">The enum flag being checked for.</param>
-    /// <returns>True if <see cref="valueToCheck"/> has the flag <see cref="checkingFor"/>.</returns>
+    /// <returns>True if valueToCheck has the flag checkingFor.</returns>
     public static bool HasFlag(this Enum valueToCheck, Enum checkingFor)
     {
         // Not as good as the .NET 4 version of this function but should be good enough.
@@ -143,9 +139,9 @@ public static class BitwiseExtensions
     /// </summary>
     /// <param name="originalValue">The original enum to modify.</param>
     /// <param name="flagToUpdate">The enum flag that will be modified.</param>
-    /// <param name="newFlagValue">The new value of the <see cref="flagToUpdate"/>.</param>
+    /// <param name="newFlagValue">The new value of the flagToUpdate.</param>
     /// <typeparam name="T">The type of the enums.</typeparam>
-    /// <returns><see cref="originalValue">OriginalValue</see> with the <see cref="flagToUpdate"/> set to <see cref="newFlagValue"/> typecasted to <see cref="T"/>.</returns>
+    /// <returns>OriginalValue with the flagToUpdate set to newFlagValue type-casted to T.</returns>
     public static T SetFlag<T>(this T originalValue, T flagToUpdate, bool newFlagValue)
         where T : struct, IComparable, IFormattable, IConvertible
     {
@@ -167,9 +163,9 @@ public static class BitwiseExtensions
     /// Removes an enumerated type and returns the new value.
     /// </summary>
     /// <param name="originalValue">The original value to be modified.</param>
-    /// <param name="flagToRemove">The flag or value to remove from <see cref="originalValue"/>.</param>
+    /// <param name="flagToRemove">The flag or value to remove from originalValue.</param>
     /// <typeparam name="T">The type to be returned.</typeparam>
-    /// <returns><see cref="originalValue">OriginalValue</see> with the <see cref="flagToRemove"/> removed, returned as <see cref="T"/>.</returns>
+    /// <returns>OriginalValue with the flagToRemove removed, returned as T.</returns>
     public static T Remove<T>(this Enum originalValue, T flagToRemove)
     {
         if (flagToRemove is null)

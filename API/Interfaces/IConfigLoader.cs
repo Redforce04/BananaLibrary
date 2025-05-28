@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="IConfig.cs" company="Redforce04">
+// <copyright file="IConfigLoader.cs" company="Redforce04">
 // Copyright (c) Redforce04. All rights reserved.
 // Licensed under the CC BY-SA 3.0 license.
 // </copyright>
@@ -8,12 +8,17 @@
 namespace BananaLibrary.API.Interfaces;
 
 /// <summary>
-/// An interface encapsulating generic configuration options which all configuration features must include.
+/// Helps manage config loading and management.
 /// </summary>
-public interface IConfig
+public interface IConfigLoader
 {
     /// <summary>
-    /// Gets or sets a value indicating whether the feature should be enabled.
+    /// Gets or sets the configuration.
     /// </summary>
-    public bool IsEnabled { get; set; }
+    IConfig Config { get; set; }
+
+    /// <summary>
+    /// Called when loading the config.
+    /// </summary>
+    void LoadConfig();
 }

@@ -1,18 +1,13 @@
+// -----------------------------------------------------------------------
+// <copyright file="Plugin.cs" company="Redforce04">
 // Copyright (c) Redforce04. All rights reserved.
+// Licensed under the CC BY-SA 3.0 license.
 // </copyright>
-// -----------------------------------------
-//    Solution:         BananaPlugin
-//    Project:          BananaPlugin
-//    FileName:         Plugin.cs
-//    Author:           Redforce04#4091
-//    Revision Date:    11/09/2023 10:48 AM
-//    Created Date:     11/09/2023 10:48 AM
-// -----------------------------------------
+// -----------------------------------------------------------------------
 
 namespace BananaLibrary;
 
 using System;
-using BananaPlugin.API.Utils;
 using LabApi.Features;
 using LabApi.Loader.Features.Plugins.Enums;
 
@@ -40,7 +35,7 @@ public sealed class Plugin : LabApi.Loader.Features.Plugins.Plugin<Config>
     public override Version RequiredApiVersion => LabApiProperties.CurrentVersion;
 
     /// <inheritdoc/>
-    public override LoadPriority Priority => LoadPriority.Medium;
+    public override LoadPriority Priority => LoadPriority.Lowest;
 
     /// <inheritdoc/>
     public override Version Version => Version.Parse("1.0.0");
@@ -48,13 +43,15 @@ public sealed class Plugin : LabApi.Loader.Features.Plugins.Plugin<Config>
     /// <inheritdoc/>
     public override void Enable()
     {
-        Loader.Loader.Initialize();
-        BPLogger.Debug($"Loaded BananaFramework v{this.Version}");
+        Instance = this;
+        Loader.Initialize();
+        Log.Debug($"Loaded BananaFramework v{this.Version}");
     }
 
     /// <inheritdoc/>
     public override void Disable()
     {
-        Loader.Loader.Unload();
+        Loader.Unload();
+        Instance = null;
     }
 }
