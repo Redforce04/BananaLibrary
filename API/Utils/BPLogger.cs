@@ -59,6 +59,78 @@ public sealed class BPLogger
     public string LogName => this.Feature.Name;
 
     /// <summary>
+    /// Logs an info message to the console.
+    /// </summary>
+    /// <param name="message">The message to log.</param>
+    public static void Info(string message)
+    {
+        LogMessage($"[BP:{GetCallerString()}] {message}", Assembly.GetCallingAssembly(), LogLevel.Info);
+    }
+
+    /// <summary>
+    /// Logs a warn message to the console.
+    /// </summary>
+    /// <param name="message">The message to log.</param>
+    public static void Warn(string message)
+    {
+        LogMessage($"[BP:{GetCallerString()}] {message}", Assembly.GetCallingAssembly(), LogLevel.Warn);
+    }
+
+    /// <summary>
+    /// Logs an error message to the console.
+    /// </summary>
+    /// <param name="message">The message to log.</param>
+    public static void Error(string message)
+    {
+        LogMessage($"[BP:{GetCallerString()}] {message}", Assembly.GetCallingAssembly(), LogLevel.Error);
+    }
+
+    /// <summary>
+    /// Logs a debug message to the console.
+    /// </summary>
+    /// <param name="message">The message to log.</param>
+    public static void Debug(string message)
+    {
+        LogMessage($"[BP:{GetCallerString()}] {message}", Assembly.GetCallingAssembly(), LogLevel.Debug);
+    }
+
+    /// <summary>
+    /// Logs an info message to the console.
+    /// </summary>
+    /// <param name="message">The message to log.</param>
+    public void FeatureInfo(string message)
+    {
+        LogMessage($"[BP+{this.LogName}-{GetCallerString(false)}] {message}", Assembly.GetCallingAssembly(), LogLevel.Info, this);
+    }
+
+    /// <summary>
+    /// Logs a warn message to the console.
+    /// </summary>
+    /// <param name="message">The message to log.</param>
+    public void FeatureWarn(string message)
+    {
+        LogMessage($"[BP+{this.LogName}-{GetCallerString(false)}] {message}", Assembly.GetCallingAssembly(), LogLevel.Warn, this);
+    }
+
+    /// <summary>
+    /// Logs an error message to the console.
+    /// </summary>
+    /// <param name="message">The message to log.</param>
+    public void FeatureError(string message)
+    {
+        LogMessage($"[BP+{this.LogName}-{GetCallerString(false)}] {message}", Assembly.GetCallingAssembly(), LogLevel.Error, this);
+    }
+
+    /// <summary>
+    /// Logs a debug message to the console.
+    /// </summary>
+    /// <param name="message">The message to log.</param>
+    public void FeatureDebug(string message)
+    {
+        LogMessage($"[BP+{this.LogName}-{GetCallerString(false)}] {message}", Assembly.GetCallingAssembly(), LogLevel.Debug, this);
+    }
+
+    /// <summary>
     /// Forces the logger to identify the calling method as the specified method and declaring type.
     /// </summary>
     /// <param name="typeName">The type name to identify as.</param>
@@ -72,78 +144,6 @@ public sealed class BPLogger
         {
             Identifiers[GetFullMethodName(method)] = (typeName, methodName);
         }
-    }
-
-    /// <summary>
-    /// Logs an info message to the console.
-    /// </summary>
-    /// <param name="message">The message to log.</param>
-    internal static void Info(string message)
-    {
-        LogMessage($"[BP:{GetCallerString()}] {message}", Assembly.GetCallingAssembly(), LogLevel.Info);
-    }
-
-    /// <summary>
-    /// Logs a warn message to the console.
-    /// </summary>
-    /// <param name="message">The message to log.</param>
-    internal static void Warn(string message)
-    {
-        LogMessage($"[BP:{GetCallerString()}] {message}", Assembly.GetCallingAssembly(), LogLevel.Warn);
-    }
-
-    /// <summary>
-    /// Logs an error message to the console.
-    /// </summary>
-    /// <param name="message">The message to log.</param>
-    internal static void Error(string message)
-    {
-        LogMessage($"[BP:{GetCallerString()}] {message}", Assembly.GetCallingAssembly(), LogLevel.Error);
-    }
-
-    /// <summary>
-    /// Logs a debug message to the console.
-    /// </summary>
-    /// <param name="message">The message to log.</param>
-    internal static void Debug(string message)
-    {
-        LogMessage($"[BP:{GetCallerString()}] {message}", Assembly.GetCallingAssembly(), LogLevel.Debug);
-    }
-
-    /// <summary>
-    /// Logs an info message to the console.
-    /// </summary>
-    /// <param name="message">The message to log.</param>
-    internal void FeatureInfo(string message)
-    {
-        LogMessage($"[BP+{this.LogName}-{GetCallerString(false)}] {message}", Assembly.GetCallingAssembly(), LogLevel.Info, this);
-    }
-
-    /// <summary>
-    /// Logs a warn message to the console.
-    /// </summary>
-    /// <param name="message">The message to log.</param>
-    internal void FeatureWarn(string message)
-    {
-        LogMessage($"[BP+{this.LogName}-{GetCallerString(false)}] {message}", Assembly.GetCallingAssembly(), LogLevel.Warn, this);
-    }
-
-    /// <summary>
-    /// Logs an error message to the console.
-    /// </summary>
-    /// <param name="message">The message to log.</param>
-    internal void FeatureError(string message)
-    {
-        LogMessage($"[BP+{this.LogName}-{GetCallerString(false)}] {message}", Assembly.GetCallingAssembly(), LogLevel.Error, this);
-    }
-
-    /// <summary>
-    /// Logs a debug message to the console.
-    /// </summary>
-    /// <param name="message">The message to log.</param>
-    internal void FeatureDebug(string message)
-    {
-        LogMessage($"[BP+{this.LogName}-{GetCallerString(false)}] {message}", Assembly.GetCallingAssembly(), LogLevel.Debug, this);
     }
 
     // ReSharper disable once UnusedParameter.Local

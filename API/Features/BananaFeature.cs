@@ -10,6 +10,7 @@ namespace BananaLibrary.API.Features;
 using CommandSystem;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
@@ -17,6 +18,7 @@ using Attributes;
 using Collections;
 using Interfaces;
 using Extensions;
+using LabApi.Features.Console;
 using MEC;
 
 /// <summary>
@@ -25,7 +27,6 @@ using MEC;
 public abstract class BananaFeature : IPrefixableItem
 {
     // ReSharper disable InconsistentNaming
-    private bool shouldEnable = false;
     private bool enabled;
 
     /// <summary>
@@ -36,10 +37,14 @@ public abstract class BananaFeature : IPrefixableItem
     }
 
     /// <summary>
-    /// Gets a list of all registered <see cref="BananaFeature">BananaFeatures</see>.
+    /// gets or sets a value indicating whether this feature should be enabled.
     /// </summary>
-    // ReSharper disable once MemberCanBePrivate.Global
-    public static FeatureCollection? Features { get; private set; }
+    /// <remarks>
+    /// When this config option is set, it overrides any plugin attributes such as DisabledByDefault.
+    /// </remarks>
+    [BananaConfig]
+    [Description("Indicates whether or not this BananaFeature should be enabled. This option overrides DisabledOnServer Attributes.")]
+    public bool ShouldEnable { get; set; } = true;
 
     /// <summary>
     /// Gets the name of the feature.
@@ -69,12 +74,13 @@ public abstract class BananaFeature : IPrefixableItem
             {
                 if (value)
                 {
+                    this.LoadFeatureEvents();
                     this.Enable();
-
                     Log.Info($"Feature '{this.Name}' was enabled!");
                 }
                 else
                 {
+                    this.UnloadFeatureEvents();
                     this.Disable();
 
                     Log.Info($"Feature '{this.Name}' was disabled!");
@@ -90,6 +96,11 @@ public abstract class BananaFeature : IPrefixableItem
         }
     }
 
+    /// <summary>
+    /// Gets a value indicating what events are subscribed.
+    /// </summary>
+    internal Dictionary<MethodInfo, BananaEventAttribute> SubscribedEvents { get; } = new();
+
     public static implicit operator bool([NotNullWhen(true)] BananaFeature? feature)
     {
         return feature is not null;
@@ -100,16 +111,6 @@ public abstract class BananaFeature : IPrefixableItem
     /// </summary>
     internal static void LoadBananaFeatures()
     {
-        Dictionary<string, BananaFeature> features = GetBananaFeatures();
-        if (features.Count == 0)
-        {
-            Log.Debug($"No features were found!");
-            return;
-        }
-
-        Features = new FeatureCollection(features.Values.ToList());
-        Features.MarkAsLoaded();
-        ExHandlers.ServerEvents.WaitingForPlayers += EnableFeatures;
     }
 
     /// <summary>
@@ -117,12 +118,14 @@ public abstract class BananaFeature : IPrefixableItem
     /// </summary>
     internal static void UnloadBananaFeatures()
     {
-        foreach (BananaFeature feature in Features!)
-        {
-            feature.Enabled = false;
-        }
+    }
 
-        Features = null;
+    /// <summary>
+    /// Enables all features for this plugin.
+    /// </summary>
+    internal static void EnableFeatures()
+    {
+        Timing.RunCoroutine(EnableBananaFeatures());
     }
 
     /// <summary>
@@ -135,97 +138,67 @@ public abstract class BananaFeature : IPrefixableItem
     /// </summary>
     protected abstract void Disable();
 
-    /// <summary>
-    /// Enables all features for this plugin.
-    /// </summary>
-    private static void EnableFeatures()
-    {
-        ExHandlers.ServerEvents.WaitingForPlayers -= EnableFeatures;
-        Timing.RunCoroutine(EnableBananaFeatures());
-    }
-
     private static IEnumerator<float> EnableBananaFeatures()
     {
         // Wait a quarter second between as an attempt to not overwhelm the game thread.
-        foreach (BananaFeature feature in Features!)
+        foreach (BananaPlugin plugin in BananaPlugin.BananaPlugins)
         {
-            yield return Timing.WaitForSeconds(.25f);
-            try
+            Log.Debug($"Loading Features for Plugin '{plugin.Prefix}'.");
+            if (plugin.Features is null)
             {
-                if (feature is IConfigLoader configLoader)
-                {
-                    configLoader.LoadConfig();
-                }
-
-                if (feature.shouldEnable)
-                {
-                    feature.Enabled = true;
-                    Log.Debug($"Feature '{feature.Name}' was enabled!");
-                }
+                continue;
             }
-            catch (Exception)
+
+            foreach (BananaFeature feature in plugin.Features)
             {
-                Log.Warn($"Could not load feature '{feature.Name}' due to an error!");
+                yield return Timing.WaitForSeconds(.25f);
+                try
+                {
+                    if (feature.ShouldEnable)
+                    {
+                        feature.Enabled = true;
+                        Log.Debug($"Feature '{feature.Name}' was enabled!");
+                    }
+                    else
+                    {
+                        Log.Debug($"Feature '{feature.Name}' will not be enabled due to configuration!");
+                    }
+                }
+                catch (Exception)
+                {
+                    Log.Warn($"Could not load feature '{feature.Name}' due to an error!");
+                }
             }
         }
     }
 
-    private static Dictionary<string, BananaFeature> GetBananaFeatures()
+    private void LoadFeatureEvents()
     {
-        Dictionary<string, BananaFeature> features = new();
-
-        foreach (Assembly pluginAssembly in LabApi.Loader.PluginLoader.Plugins.Values)
+        foreach (MethodInfo m in this.GetType().GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
         {
-            Type[] types = pluginAssembly.GetTypes();
-            foreach (Type type in types)
+            if (Attribute.GetCustomAttribute(m, typeof(BananaEventAttribute)) is not BananaEventAttribute ev)
             {
-                if (!type.IsSubclassOf(typeof(BananaFeature)) || type.IsAbstract)
-                {
-                    continue;
-                }
-
-                if (type.GetCustomAttribute<ObsoleteAttribute>() is not null)
-                {
-                    continue;
-                }
-
-                bool def = true;
-                Attribute[] attributes = Attribute.GetCustomAttributes(typeof(ServerFeatureTargetAttribute), type);
-                foreach (Attribute atr in attributes)
-                {
-                    if (atr is not ServerFeatureTargetAttribute targetAtr)
-                    {
-                        continue;
-                    }
-
-                    if (targetAtr is { TargetsServer: false })
-                    {
-                        def = targetAtr.DefaultEnabledForServer;
-                        continue;
-                    }
-
-                    BananaServer? server = targetAtr.GetServer();
-                    if (server is null)
-                    {
-                        continue;
-                    }
-
-                    if (server != BananaServer.Servers?.PrimaryKey)
-                    {
-                        continue;
-                    }
-
-                    def = targetAtr.DefaultEnabledForServer;
-                    break;
-                }
-
-                BananaFeature feature = (BananaFeature)Activator.CreateInstance(type, nonPublic: true);
-                feature.shouldEnable = def;
-                features.Add(type.FullName, feature);
-                Log.Debug($"Found Banana Feature \'{feature.Name}\'.");
+                continue;
             }
+
+            if (!ev.AutoRegister)
+            {
+                continue;
+            }
+
+            ParameterInfo[] parameterInfos = m.GetParameters();
+            ev.RegisterEvent(m, parameterInfos.Length == 1 ? parameterInfos[0].ParameterType : null, this);
+            SubscribedEvents.Add(m, ev);
+        }
+    }
+
+    private void UnloadFeatureEvents()
+    {
+        foreach (KeyValuePair<MethodInfo, BananaEventAttribute> kvp in SubscribedEvents)
+        {
+            kvp.Value.UnregisterEvent(kvp.Key);
         }
 
-        return features;
+        SubscribedEvents.Clear();
     }
 }

@@ -12,7 +12,7 @@ using System;
 /// <summary>
 /// Indicates that a feature should be disabled by default.
 /// </summary>
-[AttributeUsage(AttributeTargets.Class, Inherited = false)]
+[AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = true)]
 public sealed class DisabledByDefaultAttribute : ServerFeatureTargetAttribute
 {
     /// <summary>

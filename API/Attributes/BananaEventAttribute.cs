@@ -33,71 +33,139 @@ public sealed class BananaEventAttribute : Attribute
     /// </summary>
     /// <param name="eventHandlerType">The type of the event handler to subscribe to.</param>
     /// <param name="eventHandlerName">The name of the event handler to subscribe to.</param>
-    public BananaEventAttribute(Type eventHandlerType, string eventHandlerName)
+    /// <param name="autoRegister">Indicates whether the plugin should autoregister the event.</param>
+    public BananaEventAttribute(Type eventHandlerType, string eventHandlerName, bool autoRegister = true)
     {
         this.Type = eventHandlerType;
         this.Name = eventHandlerName;
+        this.AutoRegister = autoRegister;
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BananaEventAttribute"/> class.
     /// </summary>
-    public BananaEventAttribute()
+    /// <param name="autoRegister">Indicates whether the plugin should autoregister the event.</param>
+    public BananaEventAttribute(bool autoRegister = true)
     {
+        this.AutoRegister = autoRegister;
     }
+
+    /// <summary>
+    /// Gets a value indicating whether the event should be auto-registered once the feature is loaded.
+    /// </summary>
+    internal bool AutoRegister { get; }
 
     private Type? Type { get; }
 
     private string? Name { get; }
+
+    private EventInfo? SubscribedEvent { get; set; }
+
+    private Dictionary<object, Delegate> Objects { get; set; } = new();
+
+    private Delegate? StaticDelegate { get; set; }
 
     /// <summary>
     /// Registers the event.
     /// </summary>
     /// <param name="method">The method to hook onto the event.</param>
     /// <param name="eventArgsType">The event args to search for when finding the event. If null it will be searched using a manual lookup.</param>
-    internal void RegisterEvent(MethodInfo method, Type? eventArgsType)
+    /// <param name="obj">The object of the method. If this is null it will be assumed the object is static.</param>
+    internal void RegisterEvent(MethodInfo method, Type? eventArgsType, object? obj = null)
     {
         try
         {
-            EventInfo? info = null;
+            if ((obj is null && this.StaticDelegate is not null) || (obj is not null && Objects.ContainsKey(obj)))
             {
-                if (eventArgsType is null || !EventTypes.ContainsKey(eventArgsType))
-                {
-                    goto checkViaTypeName;
-                }
-
-                info = EventTypes[eventArgsType];
-                goto subscribeToEvent;
+                Log.Warn($"An attempt to double subscribe an event was made.");
+                return;
             }
 
-            checkViaTypeName:
+            if (this.SubscribedEvent is null)
             {
-                if (this.Name is null || this.Type is null)
+                this.SubscribedEvent = null;
                 {
+                    if (eventArgsType is null || !EventTypes.ContainsKey(eventArgsType))
+                    {
+                        goto checkViaTypeName;
+                    }
+
+                    this.SubscribedEvent = EventTypes[eventArgsType];
                     goto subscribeToEvent;
                 }
 
-                info = Type.GetEvent(this.Name, BindingFlags.Public | BindingFlags.Static);
+                checkViaTypeName:
+                {
+                    if (this.Name is null || this.Type is null)
+                    {
+                        goto subscribeToEvent;
+                    }
+
+                    this.SubscribedEvent = Type.GetEvent(this.Name, BindingFlags.Public | BindingFlags.Static);
+                }
             }
 
             subscribeToEvent:
             {
-                if (info is null)
+                if (this.SubscribedEvent is null)
                 {
                     Log.Error($"Event '{this.Name}' was not found! {(eventArgsType?.Name is null ? string.Empty : $"(Args Type: {eventArgsType.Name})")}");
                     return;
                 }
 
-                Delegate handler = Delegate.CreateDelegate(info.EventHandlerType, method);
+                Delegate triggerDelegate = Delegate.CreateDelegate(this.SubscribedEvent.EventHandlerType, obj, method);
+                if (obj is not null)
+                {
+                    this.Objects.Add(obj, triggerDelegate);
+                }
+                else
+                {
+                    this.StaticDelegate = triggerDelegate;
+                }
 
                 // Assign the event handler. This corresponds with `this.OnExecute += command.Type.Method`.
-                info.AddEventHandler(this, handler);
+                this.SubscribedEvent.AddEventHandler(this, obj is null ? this.StaticDelegate : this.Objects[obj]);
             }
         }
         catch (Exception e)
         {
             Log.Warn($"Could not register event '{this.Name}' due to an exception.");
             Log.Debug($"Exception: {e}.");
+        }
+    }
+
+    /// <summary>
+    /// Unsubscribes from the event which this method is registered to.
+    /// </summary>
+    /// <param name="method">The method to hook onto the event.</param>
+    /// <param name="instance">The instance to unregister.</param>
+    internal void UnregisterEvent(MethodInfo method, object? instance = null)
+    {
+        if (this.SubscribedEvent is null)
+        {
+            return;
+        }
+
+        if ((instance is null && this.StaticDelegate is null) || (instance is not null && !Objects.ContainsKey(instance)))
+        {
+            return;
+        }
+
+        try
+        {
+            this.SubscribedEvent.RemoveEventHandler(this, instance is null ? this.StaticDelegate : this.Objects[instance]);
+            if (instance is null)
+            {
+                this.StaticDelegate = null;
+            }
+            else
+            {
+                this.Objects.Remove(instance);
+            }
+        }
+        catch (Exception)
+        {
+            Log.Error($"Could not unregister event '{this.Name}' due to an exception.");
         }
     }
 

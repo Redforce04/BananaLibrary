@@ -13,7 +13,7 @@ using Features;
 /// <summary>
 /// Indicates that a feature should be disabled on a specific server.
 /// </summary>
-[AttributeUsage(AttributeTargets.Class)]
+[AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
 public class DisabledOnServerAttribute : ServerFeatureTargetAttribute
 {
     /// <summary>

@@ -14,7 +14,7 @@ using Features;
 /// Indicates that a feature should be disabled on a specific server.
 /// </summary>
 /// <typeparam name="T">The type of the <see cref="BananaServer"/> to target.</typeparam>
-[AttributeUsage(AttributeTargets.Class)]
+[AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
 public class DisabledOnServerAttribute<T> : ServerFeatureTargetAttribute
     where T : BananaServer, new()
 {

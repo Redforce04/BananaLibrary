@@ -16,7 +16,7 @@ using Interfaces;
 #pragma warning disable SA1401
 
 /// <summary>
-/// Used to contain all bananaplugin Features.
+/// Used to contain Banana Items.
 /// </summary>
 /// <typeparam name="T">The type item the collection holds.</typeparam>
 // ReSharper disable MemberCanBePrivate.Global

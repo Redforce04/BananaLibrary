@@ -10,7 +10,9 @@ namespace BananaLibrary.API.Collections;
 using System.Collections.Generic;
 using Features;
 
-/// <inheritdoc />
+/// <summary>
+/// Used to contain all <see cref="BananaRole"/> instances for a <see cref="BananaPlugin"/>.
+/// </summary>
 public sealed class RoleCollection : Collection<BananaRole>
 {
     /// <summary>

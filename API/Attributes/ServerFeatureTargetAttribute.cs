@@ -9,6 +9,7 @@ namespace BananaLibrary.API.Attributes;
 
 using System;
 using System.Linq;
+using System.Reflection;
 using Features;
 
 /// <summary>
@@ -68,23 +69,36 @@ public class ServerFeatureTargetAttribute : Attribute
     /// <summary>
     /// Gets the targeted server.
     /// </summary>
+    /// <param name="plugin">The BananaPlugin of the Feature target.</param>
     /// <returns>The server being targeted.</returns>
-    internal BananaServer? GetServer()
+    internal BananaServer? GetServer(BananaPlugin plugin)
     {
-        if (this.TargetsServer)
+        if (!this.TargetsServer)
         {
+            Log.Warn($"Feature flag does not target a server. Calling GetServer() will be null (this flag indicates a global feature state)");
             return null;
         }
 
         BananaServer? server = null;
-        if (this.type is not null)
+        if (plugin.Servers is null)
         {
-            server = BananaServer.Servers?.FirstOrDefault(x => x.GetType() == this.type);
+            Log.Warn($"Plugin {plugin.Prefix} does not have a server collection.");
+            return null;
         }
 
-        if (this.serverId is not null)
+        if (this.type is not null)
         {
-            server = BananaServer.Servers?.FirstOrDefault(x => x.ServerId == this.serverId);
+            server = plugin.Servers.FirstOrDefault(x => x.GetType() == this.type);
+        }
+
+        if (server is null && this.serverId is not null)
+        {
+            server = plugin.Servers.FirstOrDefault(x => x.ServerId == this.serverId);
+        }
+
+        if (server is null)
+        {
+            Log.Warn($"Could not find server with{(this.type is null ? string.Empty : $" [Type => {this.type.Name}]")}{(this.serverId is null ? string.Empty : $" [ServerId => {serverId}]")}");
         }
 
         return server;

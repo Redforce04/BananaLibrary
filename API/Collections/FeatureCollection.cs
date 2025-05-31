@@ -13,7 +13,7 @@ using System.Diagnostics.CodeAnalysis;
 using Features;
 
 /// <summary>
-/// Used to contain all <see cref="BananaFeature"/> for all plugins.
+/// Used to contain all <see cref="BananaFeature"/> for a <see cref="BananaPlugin"/>.
 /// </summary>
 public sealed class FeatureCollection : Collection<BananaFeature>
 {

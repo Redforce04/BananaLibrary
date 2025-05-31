@@ -12,7 +12,7 @@ using Features;
 using Interfaces;
 
 /// <summary>
-/// Used to contain all <see cref="BananaServer"/> instances for all plugins.
+/// Used to contain all <see cref="BananaServer"/> instances for a <see cref="BananaPlugin"/>.
 /// </summary>
 // ReSharper disable UnusedParameter.Local
 public sealed class ServerInfoCollection : Collection<BananaServer>, ICollectionPrimaryKey<BananaServer>

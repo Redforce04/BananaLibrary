@@ -8,6 +8,7 @@
 namespace BananaLibrary;
 
 using BananaLibrary.API.Features;
+using MEC;
 
 /// <summary>
 /// Contains the Initializer that is used to enable the features of this framework.
@@ -30,10 +31,13 @@ public static class Loader
         initialized = true;
         CosturaUtility.Initialize();
 
-        // Initialize the current Banana Servers
+        BananaPlugin.LoadBananaPlugins();
+
         BananaServer.LoadBananaServers();
         BananaRole.LoadBananaRoles();
         BananaFeature.LoadBananaFeatures();
+
+        Timing.CallDelayed(.5f, BananaFeature.EnableFeatures);
     }
 
     /// <summary>
@@ -47,6 +51,8 @@ public static class Loader
         }
 
         initialized = false;
+
+        // Todo make an unloading system.
         BananaServer.UnloadBananaServers();
         BananaRole.UnloadBananaRoles();
         BananaFeature.UnloadBananaFeatures();
