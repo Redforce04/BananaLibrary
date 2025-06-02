@@ -7,12 +7,6 @@
 
 namespace BananaLibrary.Extensions;
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using CommandSystem;
-using RemoteAdmin;
-
 /// <summary>
 /// Consists of permission extensions for checking banana plugin based permissions.
 /// </summary>

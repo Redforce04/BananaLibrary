@@ -1,3 +1,17 @@
 ﻿<Weavers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="FodyWeavers.xsd">
-  <Costura />
+  <Costura DisableCompression="true" DisableCleanup="true" LoadAtModuleInit="false">
+    <IncludeAssemblies>
+      0Harmony
+      Mono.Cecil
+      Mono.Cecil.Mdb
+      Mono.Cecil.Pdb
+      Mono.Cecil.Rocks
+      MonoMod.Core
+      MonoMod.Iced
+      MonoMod.ILHelpers
+      MonoMod.RuntimeDetour
+      MonoMod.Utils
+      System.ValueTuple
+    </IncludeAssemblies>
+  </Costura>
 </Weavers>

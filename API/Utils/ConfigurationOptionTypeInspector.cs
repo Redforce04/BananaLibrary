@@ -10,7 +10,6 @@ namespace BananaLibrary.API.Utils;
 using System.Collections.Generic;
 using System.Linq;
 using Attributes;
-using LabApi.Features.Console;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.TypeInspectors;
 

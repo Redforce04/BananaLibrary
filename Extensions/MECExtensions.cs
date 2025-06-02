@@ -5,7 +5,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace BananaPlugin.Extensions;
+namespace BananaLibrary.Extensions;
 
 using MEC;
 using System;

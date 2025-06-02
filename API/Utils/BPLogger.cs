@@ -10,8 +10,9 @@ namespace BananaLibrary.API.Utils;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
-using BananaLibrary.API.Features;
+using Features;
 using Discord;
 
 /// <summary>
@@ -27,6 +28,7 @@ public sealed class BPLogger
     private static readonly HashSet<MethodBase> AlreadyIdentified = new();
 
     private static readonly Dictionary<string, (string, string)> Identifiers = new ();
+    private static readonly Dictionary<string, bool> DebugModes = new();
     private static readonly Assembly CurrentAssembly;
 
 #if !DEBUG
@@ -64,7 +66,7 @@ public sealed class BPLogger
     /// <param name="message">The message to log.</param>
     public static void Info(string message)
     {
-        LogMessage($"[BP:{GetCallerString()}] {message}", Assembly.GetCallingAssembly(), LogLevel.Info);
+        LogMessage($"{GetCallerString()}{message}", Assembly.GetCallingAssembly(), LogLevel.Info);
     }
 
     /// <summary>
@@ -73,7 +75,7 @@ public sealed class BPLogger
     /// <param name="message">The message to log.</param>
     public static void Warn(string message)
     {
-        LogMessage($"[BP:{GetCallerString()}] {message}", Assembly.GetCallingAssembly(), LogLevel.Warn);
+        LogMessage($"{GetCallerString(true, true)}{message}", Assembly.GetCallingAssembly(), LogLevel.Warn);
     }
 
     /// <summary>
@@ -82,16 +84,32 @@ public sealed class BPLogger
     /// <param name="message">The message to log.</param>
     public static void Error(string message)
     {
-        LogMessage($"[BP:{GetCallerString()}] {message}", Assembly.GetCallingAssembly(), LogLevel.Error);
+        LogMessage($"{GetCallerString()}{message}", Assembly.GetCallingAssembly(), LogLevel.Error);
     }
 
     /// <summary>
     /// Logs a debug message to the console.
     /// </summary>
     /// <param name="message">The message to log.</param>
-    public static void Debug(string message)
+    /// <param name="showTrace">Indicates whether the trace should be shown.</param>
+    public static void Debug(string message, bool showTrace = true)
     {
-        LogMessage($"[BP:{GetCallerString()}] {message}", Assembly.GetCallingAssembly(), LogLevel.Debug);
+        Assembly assembly = Assembly.GetCallingAssembly();
+        if (!DebugModeEnabled(assembly))
+        {
+            return;
+        }
+
+        LogMessage($"{GetCallerString(true, showTrace)}{message}", assembly, LogLevel.Debug);
+    }
+
+    /// <summary>
+    /// Logs an exception to the console.
+    /// </summary>
+    /// <param name="ex">The exception to log.</param>
+    public static void Exception(Exception ex)
+    {
+        LogMessage($"{GetCallerString(true, true)}An error has occured while processing the method.", Assembly.GetCallingAssembly(), LogLevel.Error);
     }
 
     /// <summary>
@@ -100,7 +118,7 @@ public sealed class BPLogger
     /// <param name="message">The message to log.</param>
     public void FeatureInfo(string message)
     {
-        LogMessage($"[BP+{this.LogName}-{GetCallerString(false)}] {message}", Assembly.GetCallingAssembly(), LogLevel.Info, this);
+        LogMessage($"&4{this.LogName}&7-{GetCallerString(false)} {message}", Assembly.GetCallingAssembly(), LogLevel.Info, this);
     }
 
     /// <summary>
@@ -109,7 +127,7 @@ public sealed class BPLogger
     /// <param name="message">The message to log.</param>
     public void FeatureWarn(string message)
     {
-        LogMessage($"[BP+{this.LogName}-{GetCallerString(false)}] {message}", Assembly.GetCallingAssembly(), LogLevel.Warn, this);
+        LogMessage($"&4{this.LogName}&7-{GetCallerString(false, true)} {message}", Assembly.GetCallingAssembly(), LogLevel.Warn, this);
     }
 
     /// <summary>
@@ -118,7 +136,7 @@ public sealed class BPLogger
     /// <param name="message">The message to log.</param>
     public void FeatureError(string message)
     {
-        LogMessage($"[BP+{this.LogName}-{GetCallerString(false)}] {message}", Assembly.GetCallingAssembly(), LogLevel.Error, this);
+        LogMessage($"&4{this.LogName}&7-{GetCallerString(false)} {message}", Assembly.GetCallingAssembly(), LogLevel.Error, this);
     }
 
     /// <summary>
@@ -127,7 +145,13 @@ public sealed class BPLogger
     /// <param name="message">The message to log.</param>
     public void FeatureDebug(string message)
     {
-        LogMessage($"[BP+{this.LogName}-{GetCallerString(false)}] {message}", Assembly.GetCallingAssembly(), LogLevel.Debug, this);
+        Assembly assembly = Assembly.GetCallingAssembly();
+        if (!DebugModeEnabled(assembly))
+        {
+            return;
+        }
+
+        LogMessage($"&4{this.LogName}&7-{GetCallerString(false, true)} {message}", assembly, LogLevel.Debug, this);
     }
 
     /// <summary>
@@ -144,6 +168,22 @@ public sealed class BPLogger
         {
             Identifiers[GetFullMethodName(method)] = (typeName, methodName);
         }
+    }
+
+    private static bool DebugModeEnabled(Assembly assembly)
+    {
+        if (DebugModes.ContainsKey(assembly.FullName))
+        {
+            return DebugModes[assembly.FullName];
+        }
+
+        if (BananaPlugin.BananaPlugins.FirstOrDefault(x => x.Assembly == assembly) is not { } plugin)
+        {
+            return true;
+        }
+
+        DebugModes.Add(assembly.FullName, plugin.Config.Debug);
+        return true;
     }
 
     // ReSharper disable once UnusedParameter.Local
@@ -251,23 +291,23 @@ public sealed class BPLogger
                     _ => string.Empty,
                 } : escapeChar + currentChar switch
                 {
-                    '0' => "[30m",
-                    '1' => "[31m",
-                    '2' => "[32m",
-                    '3' => "[33m",
-                    '4' => "[34m",
-                    '5' => "[35m",
-                    '6' => "[36m",
-                    '7' => "[37m",
-                    'r' => "[0m",
-                    'b' => "[1m",
-                    'B' => "[22m",
-                    'o' => "[3m",
-                    'O' => "[23m",
-                    'm' => "[4m",
-                    'M' => "[24m",
-                    'n' => "[9m",
-                    'N' => "[29m",
+                    '0' => "[30m", // Black
+                    '1' => "[31m", // Red
+                    '2' => "[32m", // Green
+                    '3' => "[33m", // Yellow
+                    '4' => "[34m", // Blue
+                    '5' => "[35m", // Purple
+                    '6' => "[36m", // Cyan
+                    '7' => "[37m", // Gray
+                    'r' => "[0m",  // reset / White
+                    'b' => "[1m",  // bold opener
+                    'B' => "[22m", // bold closer
+                    'o' => "[3m",  // italics opener
+                    'O' => "[23m", // italics closer
+                    'm' => "[4m",  // underline opener
+                    'M' => "[24m", // underline closer
+                    'n' => "[9m",  // strikeout opener
+                    'N' => "[29m", // strikeout closer
                     _ => string.Empty,
                 };
 
@@ -299,17 +339,32 @@ public sealed class BPLogger
         return $"</{saveTag}>";
     }
 
-    private static string GetCallerString(bool includeType = true)
+    private static string GetCallerString(bool includeType = true, bool showTraces = false, bool showParamNames = false)
     {
+        if (!showTraces)
+        {
+            return string.Empty;
+        }
+
         MethodBase method = GetCallingMethod(1);
+        string paramInfo = string.Empty;
+        foreach (ParameterInfo parameter in method.GetParameters())
+        {
+            paramInfo += $"&5{parameter.ParameterType.GetTypeString()}{(showParamNames ? $" &r{parameter.Name}" : string.Empty)}&7, ";
+        }
+
+        if (paramInfo.Length > 0)
+        {
+            paramInfo = paramInfo.Substring(0, paramInfo.Length - 2);
+        }
 
         string result = !Identifiers.TryGetValue(GetFullMethodName(method), out (string, string) identifier)
             ? includeType
-                ? $"{method.DeclaringType?.Name}::{method.Name}"
-                : $"{method.Name}]"
+                ? $"&7[&6{method.DeclaringType?.Name}&r.&2{method.Name}&r({paramInfo}&r)&7] "
+                : $"&7[&2{method.Name}&r({paramInfo}&r)&7] "
             : includeType
-                ? $"{identifier.Item1}::{identifier.Item2}"
-                : $"{identifier.Item2}";
+                ? $"&7[&6{identifier.Item1}&r.&2{identifier.Item2}&7] "
+                : $"&7[&2{identifier.Item2}&7] ";
 
         return result;
     }
@@ -323,7 +378,7 @@ public sealed class BPLogger
 
     private static string GetFullMethodName(MethodBase methodBase)
     {
-        return methodBase.DeclaringType?.FullName + "::" + methodBase.Name;
+        return methodBase.DeclaringType?.FullName + "." + methodBase.Name;
     }
 
     /// <summary>

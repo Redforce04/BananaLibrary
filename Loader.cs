@@ -7,7 +7,8 @@
 // ReSharper disable InconsistentNaming
 namespace BananaLibrary;
 
-using BananaLibrary.API.Features;
+using API.Features;
+using HarmonyLib;
 using MEC;
 
 /// <summary>
@@ -17,6 +18,14 @@ using MEC;
 public static class Loader
 {
     private static bool initialized;
+
+    /// <summary>
+    /// Gets or sets the primary <see cref="Harmony"/> Instance used to patch methods.
+    /// </summary>
+    /// <remarks>
+    /// This Library uses the updated HarmonyX library rather than Lib.Harmony. It may conflict with other harmony installs.
+    /// </remarks>
+    internal static Harmony? Harmony { get; set; }
 
     /// <summary>
     /// Initializes the features of this framework.
@@ -29,8 +38,7 @@ public static class Loader
         }
 
         initialized = true;
-        CosturaUtility.Initialize();
-
+        LoadHarmony();
         BananaPlugin.LoadBananaPlugins();
 
         BananaServer.LoadBananaServers();
@@ -53,8 +61,21 @@ public static class Loader
         initialized = false;
 
         // Todo make an unloading system.
+        UnloadHarmony();
         BananaServer.UnloadBananaServers();
         BananaRole.UnloadBananaRoles();
         BananaFeature.UnloadBananaFeatures();
+    }
+
+    private static void LoadHarmony()
+    {
+        Harmony = new Harmony("BananaLibrary");
+        Harmony.PatchAll();
+    }
+
+    private static void UnloadHarmony()
+    {
+        Harmony.UnpatchAll();
+        Harmony = null;
     }
 }

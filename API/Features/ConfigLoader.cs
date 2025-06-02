@@ -7,7 +7,6 @@
 
 namespace BananaLibrary.API.Features;
 
-using System.Collections.Generic;
 using LabApi.Loader.Features.Yaml.CustomConverters;
 using Serialization;
 using Utils;

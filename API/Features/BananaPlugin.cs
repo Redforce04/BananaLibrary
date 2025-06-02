@@ -15,10 +15,11 @@ using System.Linq;
 using System.Reflection;
 using Attributes;
 using Collections;
+using HarmonyLib;
 using Interfaces;
 using LabApi.Features.Console;
-using LabApi.Loader.Features.Paths;
 using LabApi.Loader.Features.Yaml;
+using Utils;
 using YamlDotNet.Serialization.NamingConventions;
 using Plugin = LabApi.Loader.Features.Plugins.Plugin;
 
@@ -60,12 +61,12 @@ public sealed class BananaPlugin : IPrefixableItem
     /// <summary>
     /// Gets the <see cref="ServerInfoCollection"/> for all <see cref="BananaServer">BananaServers</see> defined in this plugin.
     /// </summary>
-    public ServerInfoCollection? Servers { get; private set; } = null;
+    public ServerInfoCollection? Servers { get; private set; }
 
     /// <summary>
     /// Gets the <see cref="FeatureCollection"/> for all <see cref="BananaFeature">BananaFeatures</see> defined in this plugin.
     /// </summary>
-    public FeatureCollection? Features { get; private set; } = null;
+    public FeatureCollection? Features { get; private set; }
 
     /// <summary>
     /// Gets the <see cref="RoleCollection"/> for all <see cref="BananaRole">BananaRoles</see> defined in this plugin.
@@ -84,10 +85,15 @@ public sealed class BananaPlugin : IPrefixableItem
     {
         BananaPlugins = new();
         string bananaLibraryAssemblyName = typeof(BananaPlugin).Assembly.FullName;
-        foreach (KeyValuePair<Plugin, Assembly> pluginKvp in LabApi.Loader.PluginLoader.Plugins
-                     .Where(pluginKvp => pluginKvp.Value.GetReferencedAssemblies()
-                         .Any(x => x.FullName == bananaLibraryAssemblyName)))
+        foreach (KeyValuePair<Plugin, Assembly> pluginKvp in LabApi.Loader.PluginLoader.Plugins)
         {
+            if(!pluginKvp.Value.GetReferencedAssemblies().Any(x => x.FullName == bananaLibraryAssemblyName))
+            {
+                // Log.Debug($"{pluginKvp.Value.FullName} ({pluginKvp.Key.Name}) does not reference the banana library.");
+                continue;
+            }
+
+            Log.Debug($"BananaPlugin: {pluginKvp.Value.FullName} ({pluginKvp.Key.Name}).");
             BananaPlugin plugin = new(pluginKvp.Key, pluginKvp.Value);
             Log.Debug($"Loading Configs for plugin \"{plugin.Prefix}\".");
             LoadConfigs(plugin, Attribute.GetCustomAttribute(pluginKvp.Key.GetType(), typeof(BananaPluginConfigDefaultsAttribute)) as BananaPluginConfigDefaultsAttribute);
@@ -155,10 +161,7 @@ public sealed class BananaPlugin : IPrefixableItem
                 foreach (KeyValuePair<object, object> obj in objects)
                 {
                     CopyConfigValuesWithObject(ref feat, obj.Key.ToString(), obj.Value);
-                    Logger.Debug($"{obj.Key} - {obj.Value} ({obj.Value.GetType().Name})");
                 }
-
-                continue;
             }
 
             continue;
@@ -213,7 +216,15 @@ public sealed class BananaPlugin : IPrefixableItem
                     continue;
                 }
 
-                property.SetValue(feature, Convert.ChangeType(value, property.PropertyType));
+                object? convertedValue = TypeConverter.ConvertValue(value, property.PropertyType);
+                if (convertedValue is null)
+                {
+                    Log.Error($"Value of BananaConfig {property.Name} [{property.PropertyType.Name}] could not be converted. It seems to be an unsupported type.");
+                    continue;
+                }
+
+                property.SetValue(feature, convertedValue);
+                Logger.Debug($"{key} - {value} ({property.PropertyType.GetTypeString()})");
             }
             catch (Exception e)
             {
@@ -332,7 +343,7 @@ public sealed class BananaPlugin : IPrefixableItem
         Log.Error($"Could not read configs. Defaults will be generated.");
         createDefaults:
         {
-            BananaPluginConfig? pluginConfig2 = null;
+            BananaPluginConfig? pluginConfig2;
             if (defaults is not null)
             {
                 pluginConfig2 = new BananaPluginConfig()
@@ -388,7 +399,7 @@ public sealed class BananaPlugin : IPrefixableItem
         }
     }
 
-    private static bool TryCreateDefaultConfig<TConfig>([NotNullWhen(true)] out TConfig? config)
+    private static void TryCreateDefaultConfig<TConfig>([NotNullWhen(true)] out TConfig? config)
         where TConfig : class, new()
     {
         config = null;
@@ -397,12 +408,10 @@ public sealed class BananaPlugin : IPrefixableItem
         {
             // We create a default instance of the configuration and return true.
             config = Activator.CreateInstance<TConfig>();
-            return true;
         }
         catch (Exception)
         {
             // We log the error and return false to indicate that the configuration wasn't successfully loaded.
-            return false;
         }
     }
 
@@ -559,9 +568,10 @@ public sealed class BananaPlugin : IPrefixableItem
             }
 
             BananaFeature feature = (BananaFeature)Activator.CreateInstance(type, nonPublic: true);
+            feature.Harmony = new Harmony($"BananaLibrary.{plugin.Prefix}.{feature.Name}");
             feature.ShouldEnable = def;
             features.Add(type.FullName, feature);
-            Log.Debug($"Found Banana Feature \'{feature.Name}\' [{def} vs {feature.ShouldEnable}].");
+            Log.Debug($"Found Banana Feature \'{feature.Name}\'.", false);
         }
 
         return features;

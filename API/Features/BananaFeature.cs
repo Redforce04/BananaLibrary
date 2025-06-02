@@ -7,7 +7,6 @@
 
 namespace BananaLibrary.API.Features;
 
-using CommandSystem;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -15,15 +14,15 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using Attributes;
-using Collections;
 using Interfaces;
-using Extensions;
-using LabApi.Features.Console;
+using HarmonyLib;
 using MEC;
+using Utils;
 
 /// <summary>
 /// The main feature implementation.
 /// </summary>
+// ReSharper disable ArrangeModifiersOrder
 public abstract class BananaFeature : IPrefixableItem
 {
     // ReSharper disable InconsistentNaming
@@ -74,16 +73,11 @@ public abstract class BananaFeature : IPrefixableItem
             {
                 if (value)
                 {
-                    this.LoadFeatureEvents();
                     this.Enable();
-                    Log.Info($"Feature '{this.Name}' was enabled!");
                 }
                 else
                 {
-                    this.UnloadFeatureEvents();
                     this.Disable();
-
-                    Log.Info($"Feature '{this.Name}' was disabled!");
                 }
 
                 this.enabled = value;
@@ -100,6 +94,11 @@ public abstract class BananaFeature : IPrefixableItem
     /// Gets a value indicating what events are subscribed.
     /// </summary>
     internal Dictionary<MethodInfo, BananaEventAttribute> SubscribedEvents { get; } = new();
+
+    /// <summary>
+    /// Gets the primary harmony instance used to patch this feature.
+    /// </summary>
+    protected internal Harmony Harmony { get; internal set; } = null!;
 
     public static implicit operator bool([NotNullWhen(true)] BananaFeature? feature)
     {
@@ -131,12 +130,16 @@ public abstract class BananaFeature : IPrefixableItem
     /// <summary>
     /// Enables the feature.
     /// </summary>
-    protected abstract void Enable();
+    protected virtual void Enable()
+    {
+    }
 
     /// <summary>
     /// Disables the feature.
     /// </summary>
-    protected abstract void Disable();
+    protected virtual void Disable()
+    {
+    }
 
     private static IEnumerator<float> EnableBananaFeatures()
     {
@@ -157,11 +160,8 @@ public abstract class BananaFeature : IPrefixableItem
                     if (feature.ShouldEnable)
                     {
                         feature.Enabled = true;
-                        Log.Debug($"Feature '{feature.Name}' was enabled!");
-                    }
-                    else
-                    {
-                        Log.Debug($"Feature '{feature.Name}' will not be enabled due to configuration!");
+                        LoadFeatureEvents(feature);
+                        Log.Info($"Feature '{feature.Name}' was enabled! (Events: {feature.SubscribedEvents.Count}, Patches: {feature.Harmony.GetPatchedMethods().Count()})");
                     }
                 }
                 catch (Exception)
@@ -172,9 +172,18 @@ public abstract class BananaFeature : IPrefixableItem
         }
     }
 
-    private void LoadFeatureEvents()
+    private static void LoadFeatureEvents(BananaFeature obj)
     {
-        foreach (MethodInfo m in this.GetType().GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
+        try
+        {
+            obj.Harmony.PatchAll(obj.GetType());
+        }
+        catch (Exception)
+        {
+            Log.Warn($"An error occured while trying to patch patches for feature \"{obj.Name}\".");
+        }
+
+        foreach (MethodInfo m in obj.GetType().GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
         {
             if (Attribute.GetCustomAttribute(m, typeof(BananaEventAttribute)) is not BananaEventAttribute ev)
             {
@@ -187,18 +196,28 @@ public abstract class BananaFeature : IPrefixableItem
             }
 
             ParameterInfo[] parameterInfos = m.GetParameters();
-            ev.RegisterEvent(m, parameterInfos.Length == 1 ? parameterInfos[0].ParameterType : null, this);
-            SubscribedEvents.Add(m, ev);
+            ev.RegisterEvent(m, parameterInfos.Length == 1 ? parameterInfos[0].ParameterType : null, obj);
+            obj.SubscribedEvents.Add(m, ev);
         }
     }
 
-    private void UnloadFeatureEvents()
+    // ReSharper disable once UnusedMember.Local
+    private static void UnloadFeatureEvents(BananaFeature obj)
     {
-        foreach (KeyValuePair<MethodInfo, BananaEventAttribute> kvp in SubscribedEvents)
+        try
+        {
+            obj.Harmony.UnpatchSelf();
+        }
+        catch (Exception)
+        {
+            Log.Warn($"An error occured while trying to unpatch patches for feature \"{obj.Name}\".");
+        }
+
+        foreach (KeyValuePair<MethodInfo, BananaEventAttribute> kvp in obj.SubscribedEvents)
         {
             kvp.Value.UnregisterEvent(kvp.Key);
         }
 
-        SubscribedEvents.Clear();
+        obj.SubscribedEvents.Clear();
     }
 }

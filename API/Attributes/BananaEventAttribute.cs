@@ -83,7 +83,6 @@ public sealed class BananaEventAttribute : Attribute
 
             if (this.SubscribedEvent is null)
             {
-                this.SubscribedEvent = null;
                 {
                     if (eventArgsType is null || !EventTypes.ContainsKey(eventArgsType))
                     {
@@ -171,13 +170,15 @@ public sealed class BananaEventAttribute : Attribute
 
     private static void RegisterAllEvents()
     {
+        int typeCount = 0;
         foreach (Type type in typeof(ExHandlers.ServerEvents).Assembly.GetTypes())
         {
-            if (type.Namespace != "Testing.Events.Handlers")
+            if (type.Namespace != "LabApi.Events.Handlers")
             {
                 continue;
             }
 
+            typeCount++;
             foreach (EventInfo ev in type.GetEvents(BindingFlags.Public | BindingFlags.Static))
             {
                 if (!ev.EventHandlerType.IsGenericType || ev.EventHandlerType.GetGenericTypeDefinition() != typeof(LabEventHandler<>) || ev.EventHandlerType.GenericTypeArguments.Length == 0)
@@ -188,5 +189,7 @@ public sealed class BananaEventAttribute : Attribute
                 EventTypes.Add(ev.EventHandlerType.GenericTypeArguments[0], ev);
             }
         }
+
+        Log.Debug($"Registered {EventTypes.Count} events from {typeCount} types.");
     }
 }

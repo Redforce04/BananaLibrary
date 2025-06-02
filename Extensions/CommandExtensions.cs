@@ -7,7 +7,6 @@
 
 namespace BananaLibrary.Extensions;
 
-using System.Collections.Generic;
 using CommandSystem;
 
 /// <summary>

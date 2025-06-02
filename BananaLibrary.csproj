@@ -13,7 +13,7 @@
         <RestoreAdditionalProjectSources>
         https://api.nuget.org/v3/index.json;
         https://nuget.bepinex.dev/v3/index.json
-    </RestoreAdditionalProjectSources>
+        </RestoreAdditionalProjectSources>
         <Platforms>x64;AnyCPU</Platforms>
         <Configurations>Debug;Release;Local</Configurations>
         <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
@@ -36,21 +36,19 @@
         <Reference Include="UnityEngine.PhysicsModule" HintPath="$(SL_REFERENCES)\UnityEngine.PhysicsModule.dll" Private="False" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Costura.Fody" Version="5.8.0-alpha0098" ExcludeAssets="RUNTIME">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; compile; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        <PackageReference Include="Fody" Version="6.8.0" ExcludeAssets="RUNTIME">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; compile; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        <PackageReference Include="Lib.Harmony" Version="2.2.2" ExcludeAssets="RUNTIME" />
+        <PackageReference Include="BepInEx.AssemblyPublicizer" Version="0.5.0-beta.1" ExcludeAssets="RUNTIME" />
+        <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.5.0-beta.1" ExcludeAssets="RUNTIME" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
+        <PackageReference Include="Costura.Fody" Version="5.8.0-alpha0098" PrivateAssets="all" ExcludeAssets="RUNTIME" IncludeAssets="runtime; build; compile; native; contentfiles; analyzers; buildtransitive" />
+        <PackageReference Include="Fody" Version="6.8.0" PrivateAssets="all" ExcludeAssets="RUNTIME"  IncludeAssets="runtime; build; compile; native; contentfiles; analyzers; buildtransitive" />        
+        <PackageReference Include="DanielWillett.StackCleaner" Version="1.5.1" />
+        <PackageReference Include="HarmonyX" Version="2.14.0" />
+        <PackageReference Include="MonoMod.Backports" Version="1.1.2" />
         <PackageReference Include="Northwood.LabAPI" Version="1.0.2" />
         <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" ExcludeAssets="RUNTIME" />
-        <PackageReference Include="System.Buffers" Version="4.5.1" ExcludeAssets="RUNTIME" />
-        <PackageReference Include="System.Memory" Version="4.5.5" ExcludeAssets="RUNTIME" />
-        <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" ExcludeAssets="RUNTIME" />
-        <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.5.3" ExcludeAssets="RUNTIME" />
+        <PackageReference Include="System.Buffers" Version="4.5.1" />
+        <PackageReference Include="System.Memory" Version="4.5.5" />
+        <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
+        <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.5.3" />
     </ItemGroup>
     <ItemGroup>
         <None Remove=".editorconfig" />
@@ -69,5 +67,9 @@
         <None Include="FodyWeavers.xml" Link="Resources/FodyWeavers.xml" />
         <AdditionalFiles Include="stylecop.json" Link="Resources/stylecop.json" />
         <EmbeddedResource Include="changelogs.txt" Link="Resources/changelogs.txt"/>
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Patches\" />
+      <Folder Include="Properties\" />
     </ItemGroup>
 </Project>

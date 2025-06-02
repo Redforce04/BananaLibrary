@@ -8,6 +8,7 @@
 namespace BananaLibrary;
 
 using System;
+using API.Utils;
 using LabApi.Features;
 using LabApi.Loader.Features.Plugins.Enums;
 
@@ -17,13 +18,25 @@ using LabApi.Loader.Features.Plugins.Enums;
 // ReSharper disable ClassNeverInstantiated.Global
 public sealed class Plugin : LabApi.Loader.Features.Plugins.Plugin<Config>
 {
+    static Plugin()
+    {
+        CosturaUtility.Initialize();
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Plugin"/> class.
+    /// </summary>
+    public Plugin()
+    {
+    }
+
     /// <summary>
     /// Gets the primary instance of the Banana Library Plugin. This will be null if the plugin is not currently loaded.
     /// </summary>
     public static Plugin? Instance { get; private set; }
 
     /// <inheritdoc/>
-    public override string Name => "BananaFramework";
+    public override string Name => "BananaLibrary";
 
     /// <inheritdoc/>
     public override string Description => "An API for modularized server features.";
@@ -46,6 +59,14 @@ public sealed class Plugin : LabApi.Loader.Features.Plugins.Plugin<Config>
         Instance = this;
         Loader.Initialize();
         Log.Debug($"Loaded BananaFramework v{this.Version}");
+        try
+        {
+            ThrowException();
+        }
+        catch (Exception ex)
+        {
+            Log.Debug(ObjectLogger.GetExceptionString(ex));
+        }
     }
 
     /// <inheritdoc/>
@@ -53,5 +74,10 @@ public sealed class Plugin : LabApi.Loader.Features.Plugins.Plugin<Config>
     {
         Loader.Unload();
         Instance = null;
+    }
+
+    private void ThrowException()
+    {
+        throw new Exception($"Test exception.");
     }
 }
