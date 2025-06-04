@@ -27,9 +27,7 @@
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' " />
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' " />
     <ItemGroup>
-        <Reference Include="AdvancedCommandLibrary">
-          <HintPath>..\AdvancedCommandLibrary\AdvancedCommandLibrary\bin\Debug\AdvancedCommandLibrary.dll</HintPath>
-        </Reference>
+        <Reference Include="AdvancedCommandLibrary" HintPath="$(SL_REFERENCES)\AdvancedCommandLibrary.dll" />
         <Reference Include="Pooling" HintPath="$(SL_REFERENCES)\Pooling.dll" Private="False" />
         <Reference Include="Assembly-CSharp-firstpass" HintPath="$(SL_REFERENCES)\Assembly-CSharp-firstpass.dll" Private="False" />
         <Reference Include="Assembly-CSharp" HintPath="$(SL_REFERENCES)\Assembly-CSharp.dll" Private="False" Publicized="True" />
@@ -75,4 +73,7 @@
       <Folder Include="Patches\" />
       <Folder Include="Properties\" />
     </ItemGroup>
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+      <Exec Command="copy /Y &quot;$(TargetDir)$(ProjectName).dll&quot; &quot;$(SL_REFERENCES)\$(ProjectName).dll&quot;&#xA;copy /Y &quot;$(TargetDir)$(ProjectName).xml&quot; &quot;$(SL_REFERENCES)\$(ProjectName).xml&quot;&#xA;" />
+    </Target>
 </Project>
