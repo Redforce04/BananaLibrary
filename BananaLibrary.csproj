@@ -27,6 +27,9 @@
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' " />
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' " />
     <ItemGroup>
+        <Reference Include="AdvancedCommandLibrary">
+          <HintPath>..\AdvancedCommandLibrary\AdvancedCommandLibrary\bin\Debug\AdvancedCommandLibrary.dll</HintPath>
+        </Reference>
         <Reference Include="Pooling" HintPath="$(SL_REFERENCES)\Pooling.dll" Private="False" />
         <Reference Include="Assembly-CSharp-firstpass" HintPath="$(SL_REFERENCES)\Assembly-CSharp-firstpass.dll" Private="False" />
         <Reference Include="Assembly-CSharp" HintPath="$(SL_REFERENCES)\Assembly-CSharp.dll" Private="False" Publicized="True" />
@@ -43,7 +46,7 @@
         <PackageReference Include="DanielWillett.StackCleaner" Version="1.5.1" />
         <PackageReference Include="HarmonyX" Version="2.14.0" />
         <PackageReference Include="MonoMod.Backports" Version="1.1.2" />
-        <PackageReference Include="Northwood.LabAPI" Version="1.0.2" />
+        <PackageReference Include="Northwood.LabAPI" Version="1.0.2" Publicize="True" />
         <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" ExcludeAssets="RUNTIME" />
         <PackageReference Include="System.Buffers" Version="4.5.1" />
         <PackageReference Include="System.Memory" Version="4.5.5" />

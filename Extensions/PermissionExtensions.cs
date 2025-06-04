@@ -7,11 +7,93 @@
 
 namespace BananaLibrary.Extensions;
 
+using API.Features;
+using System.Linq;
+
 /// <summary>
 /// Consists of permission extensions for checking banana plugin based permissions.
 /// </summary>
 public static class PermissionExtensions
 {
+    /// <summary>
+    /// Checks to see if a player has all the required permissions.
+    /// </summary>
+    /// <param name="player">The player to check.</param>
+    /// <param name="permissions">The permissions to check for.</param>
+    /// <returns>True if the player has all required permissions. False if the player is missing any permissions.</returns>
+    public static bool HasRolePermissions(this ExPlayer player, params string[] permissions)
+    {
+        return player.UserGroup is not null && permissions.All(permission => BananaRole.GroupPermissions[player.UserGroup.Name].Contains(permission));
+    }
+
+    /// <summary>
+    /// Checks to see if a player has any of the required permissions.
+    /// </summary>
+    /// <param name="player">The player to check.</param>
+    /// <param name="permissions">The permissions to check for.</param>
+    /// <returns>True if the player has any of the required permissions. False if the player is missing all permissions.</returns>
+    public static bool HasAnyRolePermission(this ExPlayer player, params string[] permissions)
+    {
+        return player.UserGroup is not null && permissions.Any(permission => BananaRole.GroupPermissions[player.UserGroup.Name].Contains(permission));
+    }
+
+    /// <summary>
+    /// Checks to see if a player has a role.
+    /// </summary>
+    /// <param name="player">The player to check.</param>
+    /// <param name="bananaRole">The <see cref="BananaRole"/> to check for.</param>
+    /// <returns>True if the player has the BananaRole. False if the player is missing the BananaRole.</returns>
+    public static bool HasBananaRolePermission(this ExPlayer player, BananaRole bananaRole)
+    {
+        return player.HasRolePermissions(bananaRole.PrimaryRoleNode);
+    }
+
+    /// <summary>
+    /// Checks to see if a player has a role.
+    /// </summary>
+    /// <param name="player">The player to check.</param>
+    /// <param name="bananaRole">The <see cref="BananaRole"/> to check for.</param>
+    /// <returns>True if the player has the BananaRole. False if the player is missing the BananaRole.</returns>
+    public static bool HasBananaRolePermission(this ExPlayer player, Type bananaRole)
+    {
+        BananaRole? role = BananaPlugin.BananaPlugins.FirstOrDefault(x => x.Roles is not null && x.Roles.Any(y => y.GetType() == bananaRole))?.Roles?.FirstOrDefault(z => z.GetType() == bananaRole);
+        if (role is null)
+        {
+            return false;
+        }
+
+        return player.HasRolePermissions(role.PrimaryRoleNode);
+    }
+
+    /// <summary>
+    /// Checks to see if a player has a role.
+    /// </summary>
+    /// <param name="player">The player to check.</param>
+    /// <param name="bananaRole">The <see cref="BananaRole"/> to check for.</param>
+    /// <returns>True if the player has the BananaRole. False if the player is missing the BananaRole.</returns>
+    public static bool HasBananaRolePermission(this ExPlayer player, string bananaRole)
+    {
+        BananaRole? role = BananaPlugin.BananaPlugins.FirstOrDefault(x => x.Roles is not null && x.Roles.Any(y => y.Name == bananaRole))?.Roles?.FirstOrDefault(z => z.Name == bananaRole);
+        if (role is null)
+        {
+            return false;
+        }
+
+        return player.HasRolePermissions(role.PrimaryRoleNode);
+    }
+
+    /// <summary>
+    /// Checks to see if a player has a role.
+    /// </summary>
+    /// <param name="player">The player to check.</param>
+    /// <typeparam name="T">The <see cref="BananaRole"/> to check for.</typeparam>
+    /// <returns>True if the player has the BananaRole. False if the player is missing the BananaRole.</returns>
+    public static bool HasBananaRolePermission<T>(this ExPlayer player)
+        where T : BananaRole, new()
+    {
+        return player.HasBananaRolePermission(typeof(T));
+    }
+
     /*
     /// <summary>
     /// Checks if a player has the specified banana bungalow staff rank.

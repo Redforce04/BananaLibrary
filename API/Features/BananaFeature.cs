@@ -17,7 +17,6 @@ using Attributes;
 using Interfaces;
 using HarmonyLib;
 using MEC;
-using Utils;
 
 /// <summary>
 /// The main feature implementation.

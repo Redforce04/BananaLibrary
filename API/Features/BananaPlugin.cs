@@ -71,7 +71,7 @@ public sealed class BananaPlugin : IPrefixableItem
     /// <summary>
     /// Gets the <see cref="RoleCollection"/> for all <see cref="BananaRole">BananaRoles</see> defined in this plugin.
     /// </summary>
-    public RoleCollection? Roles { get; private set; } = null;
+    public RoleCollection? Roles { get; private set; }
 
     /// <summary>
     /// Gets the <see cref="BananaPluginConfig"/> for the plugin.
@@ -100,8 +100,7 @@ public sealed class BananaPlugin : IPrefixableItem
             Log.Debug($"Loading Banana Servers for plugin \"{plugin.Prefix}\".");
             LoadBananaServers(plugin);
             Log.Debug($"Loading Banana Roles for plugin \"{plugin.Prefix}\".");
-
-            // Todo: revise BananaRole System.
+            LoadBananaRoles(plugin);
             Log.Debug($"Loading Banana Features for plugin \"{plugin.Prefix}\".");
             LoadBananaFeatures(plugin);
 
@@ -118,6 +117,7 @@ public sealed class BananaPlugin : IPrefixableItem
         LoadFeatureConfigs();
     }
 
+#region Configs
     private static void LoadFeatureConfigs()
     {
         foreach (BananaPlugin plugin in BananaPlugins)
@@ -437,7 +437,9 @@ public sealed class BananaPlugin : IPrefixableItem
             return false;
         }
     }
+#endregion
 
+#region BananaServers
     private static void LoadBananaServers(BananaPlugin plugin)
     {
         try
@@ -497,7 +499,9 @@ public sealed class BananaPlugin : IPrefixableItem
 
         return serverInfos;
     }
+#endregion
 
+#region BananFeatures
     private static void LoadBananaFeatures(BananaPlugin plugin)
     {
         Dictionary<string, BananaFeature> features = GetBananaFeatures(plugin);
@@ -576,4 +580,100 @@ public sealed class BananaPlugin : IPrefixableItem
 
         return features;
     }
+#endregion
+
+#region BananaRoles
+    private static void LoadBananaRoles(BananaPlugin plugin)
+    {
+        Dictionary<string, BananaRole> features = GetBananaRoles(plugin);
+        if (features.Count == 0)
+        {
+            Log.Debug($"No Roles were found!");
+            return;
+        }
+
+        plugin.Roles = new RoleCollection(features.Values.ToList());
+        plugin.Roles.MarkAsLoaded();
+        foreach (BananaRole role in plugin.Roles)
+        {
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+            if (role.RoleNodes is null)
+            {
+                ProcessRoles(role, 0, plugin);
+            }
+        }
+    }
+
+    private static Dictionary<string, BananaRole> GetBananaRoles(BananaPlugin plugin)
+    {
+        Dictionary<string, BananaRole> roles = new();
+
+        Type[] types = plugin.Assembly.GetTypes();
+        foreach (Type type in types)
+        {
+            if (!type.IsSubclassOf(typeof(BananaRole)) || type.IsAbstract)
+            {
+                continue;
+            }
+
+            if (type.GetCustomAttribute<ObsoleteAttribute>() is not null)
+            {
+                continue;
+            }
+
+            BananaRole role = (BananaRole)Activator.CreateInstance(type, nonPublic: true);
+
+            roles.Add(type.FullName, role);
+            Log.Debug($"Found Banana Role \'{role.Name}\'.", false);
+        }
+
+        return roles;
+    }
+
+    private static void ProcessRoles(BananaRole role, int depth, BananaPlugin plugin)
+    {
+        if (depth >= 10)
+        {
+            Log.Warn($"Process Roles has hit the 10th iteration which could be a bug.");
+            return;
+        }
+
+        InheritBananaRoleAttribute[] inheritedRoles = Attribute.GetCustomAttributes(role.GetType(), typeof(InheritBananaRoleAttribute)).Cast<InheritBananaRoleAttribute>().ToArray();
+        role.RoleNodes = new List<string>();
+        string primaryPrefix = $"BananaLibrary.{plugin.Prefix}.Role.{role.Prefix}";
+        role.PrimaryRoleNode = primaryPrefix;
+        role.RoleNodes.Add(primaryPrefix);
+        if (inheritedRoles.Length == 0)
+        {
+            return;
+        }
+
+        foreach(InheritBananaRoleAttribute inheritedRoleAttribute in inheritedRoles)
+        {
+            BananaRole? inheritedRole = null;
+            if (inheritedRoleAttribute.RoleName is not null)
+            {
+                plugin.Roles!.TryGetItem(inheritedRoleAttribute.RoleName, out inheritedRole);
+            }
+
+            if (inheritedRole is null && inheritedRoleAttribute.RoleType is not null)
+            {
+                inheritedRole = plugin.Roles!.FirstOrDefault(x => x.GetType() == inheritedRoleAttribute.RoleType);
+            }
+
+            if (inheritedRole is null)
+            {
+                continue;
+            }
+
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+            if (inheritedRole.RoleNodes is null)
+            {
+                ProcessRoles(inheritedRole, depth + 1, plugin);
+            }
+
+            role.RoleNodes.AddRange(inheritedRole.RoleNodes);
+        }
+    }
+#endregion
 }

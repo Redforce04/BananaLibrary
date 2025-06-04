@@ -42,9 +42,9 @@ public static class Loader
         BananaPlugin.LoadBananaPlugins();
 
         BananaServer.LoadBananaServers();
-        BananaRole.LoadBananaRoles();
+        LabApi.Events.Handlers.ServerEvents.WaitingForPlayers += BananaRole.LoadBananaRoles;
+        PermissionsProvider.LoadPermissionProvider();
         BananaFeature.LoadBananaFeatures();
-
         Timing.CallDelayed(.5f, BananaFeature.EnableFeatures);
     }
 
@@ -62,9 +62,17 @@ public static class Loader
 
         // Todo make an unloading system.
         UnloadHarmony();
+        LabApi.Events.Handlers.ServerEvents.WaitingForPlayers -= BananaRole.LoadBananaRoles;
+
         BananaServer.UnloadBananaServers();
+        PermissionsProvider.UnloadPermissionProvider();
         BananaRole.UnloadBananaRoles();
         BananaFeature.UnloadBananaFeatures();
+    }
+
+    private static void OnWaitingForPlayer()
+    {
+        BananaRole.LoadBananaRoles();
     }
 
     private static void LoadHarmony()
