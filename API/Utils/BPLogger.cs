@@ -23,10 +23,9 @@ public sealed class BPLogger
     /// <summary>
     /// Gets a list of loggers.
     /// </summary>
+    // ReSharper disable once CollectionNeverQueried.Global
     public static readonly List<BPLogger> Loggers = new ();
-
     private static readonly HashSet<MethodBase> AlreadyIdentified = new();
-
     private static readonly Dictionary<string, (string, string)> Identifiers = new ();
     private static readonly Dictionary<string, bool> DebugModes = new();
     private static readonly Assembly CurrentAssembly;
@@ -113,6 +112,22 @@ public sealed class BPLogger
     }
 
     /// <summary>
+    /// Forces the logger to identify the calling method as the specified method and declaring type.
+    /// </summary>
+    /// <param name="typeName">The type name to identify as.</param>
+    /// <param name="methodName">The method name to identify as.</param>
+    /// <param name="force">Specifies whether to force the operation.</param>
+    public static void IdentifyMethodAs(string typeName, string methodName, bool force = false)
+    {
+        MethodBase method = GetCallingMethod();
+
+        if (AlreadyIdentified.Add(method) || force)
+        {
+            Identifiers[GetFullMethodName(method)] = (typeName, methodName);
+        }
+    }
+
+    /// <summary>
     /// Logs an info message to the console.
     /// </summary>
     /// <param name="message">The message to log.</param>
@@ -155,19 +170,13 @@ public sealed class BPLogger
     }
 
     /// <summary>
-    /// Forces the logger to identify the calling method as the specified method and declaring type.
+    /// Adds an assembly to the debug dictionary.
     /// </summary>
-    /// <param name="typeName">The type name to identify as.</param>
-    /// <param name="methodName">The method name to identify as.</param>
-    /// <param name="force">Specifies whether to force the operation.</param>
-    internal static void IdentifyMethodAs(string typeName, string methodName, bool force = false)
+    /// <param name="assembly">The assembly to add.</param>
+    /// <param name="debug">The debug mode to set.</param>
+    internal static void AddAssemblyToDebug(Assembly assembly, bool debug)
     {
-        MethodBase method = GetCallingMethod();
-
-        if (AlreadyIdentified.Add(method) || force)
-        {
-            Identifiers[GetFullMethodName(method)] = (typeName, methodName);
-        }
+        DebugModes.Add(assembly.FullName, debug);
     }
 
     private static bool DebugModeEnabled(Assembly assembly)
@@ -175,6 +184,12 @@ public sealed class BPLogger
         if (DebugModes.ContainsKey(assembly.FullName))
         {
             return DebugModes[assembly.FullName];
+        }
+
+        // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+        if (BananaPlugin.BananaPlugins is null)
+        {
+            return Plugin.Instance?.Config?.Debug ?? true;
         }
 
         if (BananaPlugin.BananaPlugins.FirstOrDefault(x => x.Assembly == assembly) is not { } plugin)

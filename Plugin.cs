@@ -57,16 +57,10 @@ public sealed class Plugin : LabApi.Loader.Features.Plugins.Plugin<Config>
     public override void Enable()
     {
         Instance = this;
+        this.LoadConfigs();
+        Log.AddAssemblyToDebug(typeof(Plugin).Assembly, this.Config!.Debug);
         Loader.Initialize();
-        Log.Debug($"Loaded BananaFramework v{this.Version}");
-        try
-        {
-            ThrowException();
-        }
-        catch (Exception ex)
-        {
-            Log.Debug(ObjectLogger.GetExceptionString(ex));
-        }
+        Log.Info($"Loaded BananaFramework v{this.Version} {(this.Config?.Debug ?? false ? "[Debug]" : string.Empty)}");
     }
 
     /// <inheritdoc/>

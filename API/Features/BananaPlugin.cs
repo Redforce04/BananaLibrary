@@ -83,20 +83,21 @@ public sealed class BananaPlugin : IPrefixableItem
     /// </summary>
     internal static void LoadBananaPlugins()
     {
+        Log.Debug("Loading BananaPlugins");
         BananaPlugins = new();
         string bananaLibraryAssemblyName = typeof(BananaPlugin).Assembly.FullName;
         foreach (KeyValuePair<Plugin, Assembly> pluginKvp in LabApi.Loader.PluginLoader.Plugins)
         {
-            if(!pluginKvp.Value.GetReferencedAssemblies().Any(x => x.FullName == bananaLibraryAssemblyName))
+            if (!Attribute.IsDefined(pluginKvp.Key.GetType(), typeof(BananaPluginAttribute)))
             {
-                // Log.Debug($"{pluginKvp.Value.FullName} ({pluginKvp.Key.Name}) does not reference the banana library.");
+                Log.Debug($"Plugin {pluginKvp.Key.Name} is missing the BananaPluginAttribute.");
                 continue;
             }
 
             Log.Debug($"BananaPlugin: {pluginKvp.Value.FullName} ({pluginKvp.Key.Name}).");
             BananaPlugin plugin = new(pluginKvp.Key, pluginKvp.Value);
             Log.Debug($"Loading Configs for plugin \"{plugin.Prefix}\".");
-            LoadConfigs(plugin, Attribute.GetCustomAttribute(pluginKvp.Key.GetType(), typeof(BananaPluginConfigDefaultsAttribute)) as BananaPluginConfigDefaultsAttribute);
+            LoadConfigs(plugin, Attribute.GetCustomAttribute(pluginKvp.Key.GetType(), typeof(BananaPluginAttribute)) as BananaPluginAttribute);
             Log.Debug($"Loading Banana Servers for plugin \"{plugin.Prefix}\".");
             LoadBananaServers(plugin);
             Log.Debug($"Loading Banana Roles for plugin \"{plugin.Prefix}\".");
@@ -325,7 +326,7 @@ public sealed class BananaPlugin : IPrefixableItem
         return true;
     }
 
-    private static void LoadConfigs(BananaPlugin plugin, BananaPluginConfigDefaultsAttribute? defaults = null)
+    private static void LoadConfigs(BananaPlugin plugin, BananaPluginAttribute? defaults = null)
     {
         const string fileName = "BananaSettings.yml";
         string pluginConfigPath = LabApi.Loader.ConfigurationLoader.GetConfigPath(plugin.Plugin, fileName);
