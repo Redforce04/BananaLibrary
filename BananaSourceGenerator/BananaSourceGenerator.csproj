@@ -1,0 +1,54 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <AssemblyTitle>BananaSourceGenerator</AssemblyTitle>
+        <Product>BananaSourceGenerator</Product>
+        <Copyright>Copyright © 2023</Copyright>
+        <!--
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>embedded</DebugType>
+        <Platforms>x64;AnyCPU</Platforms>
+        <Configurations>Release</Configurations>
+        <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
+        <NoWarn>$(NoWarn),1573,1591,1712</NoWarn>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' " />
+        -->
+        <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+        <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
+        <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
+        <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)BananaLibrary.ruleset</CodeAnalysisRuleSet>
+        <Nullable>enable</Nullable>
+        <LangVersion>preview</LangVersion>
+        <RestoreAdditionalProjectSources>
+            https://api.nuget.org/v3/index.json;
+            https://nuget.bepinex.dev/v3/index.json
+        </RestoreAdditionalProjectSources>
+        <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+    </PropertyGroup>
+    <ItemGroup>
+        <None Remove=".editorconfig" />
+        <None Include=".editorconfig" Link="Resources/.editorconfig" />
+        <None Remove="BananaLibrary.ruleset" />
+        <None Include="BananaLibrary.ruleset" Link="Resources/BananaLibrary.ruleset" />
+        <None Remove="NuGet.config" />
+        <None Include="NuGet.config" Link="Resources/NuGet.config" />
+        <None Remove="..\.gitignore" />
+        <None Include="..\.gitignore" Link="Resources/.gitignore" />
+        <None Remove="..\.gitattributes" />
+        <None Include="..\.gitattributes" Link="Resources/.gitattributes" />
+        <None Remove="..\README.md" />
+        <None Include="..\README.md" Link="Resources/README.md" />
+        <AdditionalFiles Include="stylecop.json" Link="Resources/stylecop.json" />
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.12.0" />
+        <!-- PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.556" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" /-->
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Attributes\" />
+    </ItemGroup>
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+        <Exec Command="copy /Y &quot;$(TargetDir)$(ProjectName).dll&quot; &quot;$(SL_REFERENCES)\$(ProjectName).dll&quot;&#xA;copy /Y &quot;$(TargetDir)$(ProjectName).xml&quot; &quot;$(SL_REFERENCES)\$(ProjectName).xml&quot;&#xA;" />
+    </Target>
+</Project>

@@ -1,0 +1,82 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net481</TargetFramework>
+        <AssemblyTitle>BananaLibrary</AssemblyTitle>
+        <Product>BananaLibrary</Product>
+        <Copyright>Copyright © 2023</Copyright>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <DebugSymbols>true</DebugSymbols>
+        <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
+        <DebugType>embedded</DebugType>
+        <Nullable>enable</Nullable>
+        <LangVersion>preview</LangVersion>
+        <RestoreAdditionalProjectSources>
+        https://api.nuget.org/v3/index.json;
+        https://nuget.bepinex.dev/v3/index.json
+        </RestoreAdditionalProjectSources>
+        <Platforms>x64;AnyCPU</Platforms>
+        <Configurations>Debug;Release;Local</Configurations>
+        <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
+        <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)BananaLibrary.ruleset</CodeAnalysisRuleSet>
+        <NoWarn>$(NoWarn),1573,1591,1712</NoWarn>
+        <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
+        <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Local|AnyCPU'">
+        <DefineConstants>$(DefineConstants);DEBUG</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' " />
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' " />
+    <ItemGroup>
+        <Reference Include="AdvancedCommandLibrary" HintPath="$(SL_REFERENCES)\AdvancedCommandLibrary.dll" />
+        <Reference Include="Pooling" HintPath="$(SL_REFERENCES)\Pooling.dll" Private="False" />
+        <Reference Include="Assembly-CSharp-firstpass" HintPath="$(SL_REFERENCES)\Assembly-CSharp-firstpass.dll" Private="False" />
+        <Reference Include="Assembly-CSharp" HintPath="$(SL_REFERENCES)\Assembly-CSharp.dll" Private="False" Publicized="True" />
+        <Reference Include="Mirror" HintPath="$(SL_REFERENCES)\Mirror.dll" Private="False" />
+        <Reference Include="CommandSystem.Core" HintPath="$(SL_REFERENCES)\CommandSystem.Core.dll" Private="False" />
+        <Reference Include="UnityEngine.CoreModule" HintPath="$(SL_REFERENCES)\UnityEngine.CoreModule.dll" Private="False" />
+        <Reference Include="UnityEngine.PhysicsModule" HintPath="$(SL_REFERENCES)\UnityEngine.PhysicsModule.dll" Private="False" />
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="BepInEx.AssemblyPublicizer" Version="0.5.0-beta.1" ExcludeAssets="RUNTIME" />
+        <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.5.0-beta.1" ExcludeAssets="RUNTIME" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
+        <PackageReference Include="Costura.Fody" Version="5.8.0-alpha0098" PrivateAssets="all" ExcludeAssets="RUNTIME" IncludeAssets="runtime; build; compile; native; contentfiles; analyzers; buildtransitive" />
+        <PackageReference Include="Fody" Version="6.8.0" PrivateAssets="all" ExcludeAssets="RUNTIME"  IncludeAssets="runtime; build; compile; native; contentfiles; analyzers; buildtransitive" />        
+        <PackageReference Include="DanielWillett.StackCleaner" Version="1.5.1" />
+        <PackageReference Include="HarmonyX" Version="2.14.0" />
+        <PackageReference Include="MonoMod.Backports" Version="1.1.2" />
+        <PackageReference Include="Northwood.LabAPI" Version="1.0.2" Publicize="True" />
+        <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.556" ExcludeAssets="RUNTIME" />
+        <PackageReference Include="System.Buffers" Version="4.5.1" />
+        <PackageReference Include="System.Memory" Version="4.5.5" />
+        <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
+        <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.5.3" />
+    </ItemGroup>
+    <ItemGroup>
+        <None Remove="BananaSourceGenerator" />
+        <Compile Remove="BananaSourceGenerator" />
+        <None Remove=".editorconfig" />
+        <None Include=".editorconfig" Link="Resources/.editorconfig" />
+        <None Remove="BananaLibrary.ruleset" />
+        <None Include="BananaLibrary.ruleset" Link="Resources/BananaLibrary.ruleset" />
+        <None Remove="NuGet.config" />
+        <None Include="NuGet.config" Link="Resources/NuGet.config" />
+        <None Remove="..\.gitignore" />
+        <None Include="..\.gitignore" Link="Resources/.gitignore" />
+        <None Remove="..\.gitattributes" />
+        <None Include="..\.gitattributes" Link="Resources/.gitattributes" />
+        <None Remove="..\README.md" />
+        <None Include="..\README.md" Link="Resources/README.md" />
+        <None Remove="FodyWeavers.xml" />
+        <None Include="FodyWeavers.xml" Link="Resources/FodyWeavers.xml" />
+        <AdditionalFiles Include="stylecop.json" Link="Resources/stylecop.json" />
+        <EmbeddedResource Include="changelogs.txt" Link="Resources/changelogs.txt"/>
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Patches\" />
+      <Folder Include="Properties\" />
+    </ItemGroup>
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+      <Exec Command="copy /Y &quot;$(TargetDir)$(ProjectName).dll&quot; &quot;$(SL_REFERENCES)\$(ProjectName).dll&quot;&#xA;copy /Y &quot;$(TargetDir)$(ProjectName).xml&quot; &quot;$(SL_REFERENCES)\$(ProjectName).xml&quot;&#xA;" />
+    </Target>
+</Project>

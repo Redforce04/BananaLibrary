@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BananaLibrary", "BananaLibrary\BananaLibrary.csproj", "{0FDD195B-87FF-4F47-89DC-A7938AA819F2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BananaSourceGenerator", "BananaSourceGenerator\BananaSourceGenerator.csproj", "{F95C1123-3222-4F95-8255-31D8832558EA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0FDD195B-87FF-4F47-89DC-A7938AA819F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0FDD195B-87FF-4F47-89DC-A7938AA819F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0FDD195B-87FF-4F47-89DC-A7938AA819F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0FDD195B-87FF-4F47-89DC-A7938AA819F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F95C1123-3222-4F95-8255-31D8832558EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F95C1123-3222-4F95-8255-31D8832558EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F95C1123-3222-4F95-8255-31D8832558EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F95C1123-3222-4F95-8255-31D8832558EA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

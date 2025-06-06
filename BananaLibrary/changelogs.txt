@@ -1,0 +1,183 @@
+﻿1.6.4
+- Fix a goof with the time counter coroutine in 'SCP-294 Balance' causing it to accumulate through multiple rounds.
+
+1.6.3
+- Added new feature: 'SCP-294 Balance'
+  - SCP-294 starts with one use, and gains one use every 3 minutes as the round progresses.
+
+1.6.2
+- Radio hint is now in a better spot and has some cool effects!
+- Radio hint will now also show upon picking up a radio.
+- Fixed a bug where the red bull effect isnt synced properly.
+- Improved dependency-based patches so they no longer take so long to apply upon server start.
+
+1.6.1
+- Add hint explaining channels when spawning with radio.
+- Fix 'bottleinvasion' command description.
+
+1.6.0
+- Made pushing 3x stronger on chaotic thursdays.
+- RedBull changes
+  - Effect is now independent.
+  - Effect damage now scales with intake, bypassing AHP and Hume.
+  - Max AHP increases as you intake more red bull.
+    - In order as follows: 70, 75, 85, 100
+- RedBull can now be obtained from SCP-294
+  - Type 'red bull' to receive it.
+
+1.5.1
+- Update to EXILED 8.2.1
+- Fixed null component / gameobject error in Cleanup feature.
+- Fixed a consistent error causing the server to freeze while players are online.
+- Patches are now applied instantly instead of waiting for EXILED.
+- Buffed red bull:
+  - AHP regen is now the following for amount taken:
+    - 1 -> 1.5/s
+    - 2 -> 2/s
+    - 3 -> 2.5/s
+    - 4 -> 3.5/s
+  - AHP efficacy for red bull increased from 70% -> 85%.
+
+1.5.0
+- Added new feature 'CustomCola' currently implementing Red Bull
+  - Command 'bp cola gredbull' to give yourself a red bull. (Admin+ only)
+  - Red Bull can be obtained by DROPPING Anti207 or 207 on 1:1.
+    - Applies the Invigorated and Hemorrhage status effects.
+    - Gives passive AHP regen with the specified amount taken:
+      - 1 -> 0.5/s
+      - 2 -> 1/s
+      - 3 -> 1.5/s
+      - 4 -> 2.5/s
+    - AHP regen is stalled for 10 seconds if you take 10 or more damage in one hit. (time does not stack)
+    - Explodes upon intake with Anti207 or 207.
+
+- Fix players spawning where they arent supposed to. (Void bug)
+- Remove Pool Object patch as it is unused.
+- Remove SchematicLoader and SLEditor reference as they aren't used.
+- Add reference to SCP-294 plugin for compatability.
+
+1.4.0
+- Update to EXILED 8.0
+  - Fix some events.
+
+- Update to SCPSL 13.2
+  - Removed some code related to 'Scp268Buff' and 'Scp939Balance'
+
+- Removed some unused code.
+- Fixed a bug where disabling auto nuke doesn't kill a coroutine.
+- Fixed a bug where leaving would not kill the player.
+- EXILED permissions is now patched directly for developer access.
+- Allow joining other servers from the test server.
+
+1.3.1
+- Fix a bug allowing for SCP-268 to still be active when used before escaping.
+- Effects are no longer removed then reapplied.
+  - Effects stay active as normal, and cache is not needed.
+  - Client is sent fake sync values to properly show the effects, to handle a race-condition issue where the effects do not show for the client.
+
+1.3.0
+- Added Disarm Balance feature
+  - Players will now be undetained at the following distances:
+    - 70m on surface.
+    - 50m in the facility.
+  - Original distance was 90m. (6 hallways)
+
+- Replaced 'Guard Escape' with 'Better Escape'
+  - Players now keep their effects upon escaping.
+
+- Added 'Camp Prevention' feature which currently implements nuke silo radiation.
+  - Players who stay in the nuke room for 2 minutes slowly die to the poison effect.
+  - Time is regained 2.5x slower than you have been in the nuke silo, while you aren't in it.
+    - Spent 2 mins -> 5 mins until your timer is back at zero.
+  - Wearing heavy armor allows you to stay for 3x longer.
+  - Damage bypasses AHP and Hume.
+  - SCPs take 6x the amount of damage.
+  
+- Added server port specific features.
+  - Features can now be restricted to certain ports.
+
+- Added Joining Test Server command 'bp testsrv'
+  - Allows players to join the test server.
+  - Can be toggled by developers with another command.
+
+- Added lucky coins feature (not fully implemented / test server only)
+  - Coins upgraded on fine become random lucky coins, 30% destroy chance.
+    - These coins land on both heads and tails.
+  - Coins upgraded on very fine become lucky coins, 80% destroy chance.
+    - These coins always land on heads.
+  - Heads gives a buff, tails gives a debuff.
+
+1.2.1
+- SCP-939 can now only hit up to 2 players per swing when inside an elevator.
+
+1.2.0
+- Added 'Better Radios' feature.
+  - Radios have 6 accessible channels, can be cycled and turned off by right clicking.
+  - Radios now have 3x the amount of battery, for prolonged usage in gameplay.
+  - Radios will not lose battery unless transmitting.
+
+1.1.3
+- Fix an issue where the deafened effect would last up to 18 seconds on SCP-939 from flash grenades, preventing them from attacking anyone.
+  - The deafened effect now lasts only 8 seconds.
+
+1.1.2
+- Fix NRE when getting developer info. (cleanup as well)
+- Developer mode now has full EXILED permissions.
+
+1.1.1
+- Fix SCP-079 being kicked for AFK when not AFK.
+- Added extra checks for different interactions as other SCP roles.
+
+1.1.0
+- Updated Exiled reference to 7.2.0
+- Fixed an issue where tutorials could be handcuffed.
+- Fixed an extension issue where rotations would not be set properly.
+- Patches now apply after level load to wait for EXILED.
+- Optimized a patch involved in sending player positions.
+- Added a placeholder chaotic thursday feature. (awaiting usage)
+- Added a patch allowing for intercepting pool returns.
+- Added disconnect replace feature placeholder. (currently disabled)
+- Added new TranspilerHelper class to implement transpilers easier.
+
+- Added AFK Detector feature which automatically kicks players.
+  - Players who have just spawned have 90 seconds before they are kicked.
+  - Players who are active in the round have 3 minutes before they are kicked.
+  - Players who are in the tutorial tower are not kicked.
+  - Global Moderators and players with AFKImmunity permission are not kicked.
+  - Disables default AFK kicker while enabled.
+
+- Added SCP-939 Balance feature
+  - SCP-939 can only hit 3 players at once with their attacks.
+  - SCP-939 cannot see players while deafened.
+  - Flash grenades have an additional 3 seconds of deafening on SCP-939.
+
+- Readded the long awaited bottle invasion command.
+  - Has a global limit of 100 bottles spawned at a time.
+  - Includes a bottle clear command.
+  - Bottles created by this command cannot be picked up.
+
+- Updated Scp268 Buff feature.
+  - Players using SCP-268 no longer stop SCP-173.
+
+1.0.1
+- Fix versioning not working.
+- Pink candy no longer causes KOS broadcasts.
+- Developer override now properly disables for users who don't have a group.
+
+1.0.0
+Added basic feature loader.
+
+Added DeveloperCommandSender and override command.
+- Allows developers to enter developer mode to access remote admin if necessary.
+
+Added basic commands: enable, disable, showfeatures, and information command.
+
+Added features:
+- Round End FF
+- Guard Escape
+- Auto Nuke
+- Staff Helper
+- Cleanup
+- Pink Candy Bowl
+- Custom Rooms (placeholder)
+- Trolling
